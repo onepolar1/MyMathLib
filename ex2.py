@@ -6,7 +6,8 @@ from PyQt4.QtGui import QApplication
 from PyQt4.QtWebKit import QWebView
 
 pageSource = """<html><head>
-<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+<script type="text/javascript" async src="file:///E:/newwork/MathJax-2.6-latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </head><body>
 <p><mathjax>$$
 \imath x+y=z

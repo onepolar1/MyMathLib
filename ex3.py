@@ -9,23 +9,26 @@ class BrowserScreen(QWebView):
         self.resize(800, 600)
         self.show()
         self.setHtml("""
-           <script>function message() { return "Clicked!"; }</script>
-           <h1>QtWebKit + Python sample program</h1>
-           <input type="button" value="Click JavaScript!"
-                  onClick="alert('[javascript] ' + message())"/>
-           <input type="button" value="Click Python!"
-                  onClick="python.alert('[python] ' +
-                                        python.message())"/>
-           <br />
+        <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+<script type="text/javascript" async src="file:///E:/newwork/MathJax-2.6-latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 
-           <iframe src="http://www.so.com/"
-                   width="750" height="500"
-                   scrolling="no"
-                   frameborder="0"
-                   align="center"></iframe>
+<p>$x+y=z \pi$</p>
+<p>$a \div b = z^2$</p>
+<p>$\\frac{2}{3}=5$</p>
+<p>$$\\frac{2}{3}=5$$</p>
+<p>Euler's identity, <mathjax>$e^{i\pi} = -1$</mathjax>, is widely considered the most beautiful theorem in
+
+mathematics.</p>
+
         """)
-        self.createTrayIcon()
-        self.trayIcon.show()
+
+        myset = self.settings()
+        # myset.setFontSize(QWebSettings.DefaultFontSize, 20)
+        myset.setFontSize(QWebSettings.MinimumFontSize, 20)
+        # self.createTrayIcon()
+        # self.trayIcon.show()
 
     def createTrayIcon(self):
         self.trayIcon = QSystemTrayIcon(self)
