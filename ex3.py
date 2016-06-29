@@ -12,7 +12,7 @@ class BrowserScreen(QWebView):
         myset = self.settings()
         # myset.setFontSize(QWebSettings.DefaultFontSize, 20)
         myset.setFontSize(QWebSettings.MinimumFontSize, 20)
-        
+
         self.setHtml("""
             <head>
             <script type="text/x-mathjax-config">
@@ -20,22 +20,26 @@ class BrowserScreen(QWebView):
                     tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
                 });
             </script>
-
             <script type="text/javascript" async src="MathJax2.6/MathJax.js?config=TeX-MML-AM_HTMLorMML"></script>
+            <style>
+                p { color: #ff0000; }
+                strong {color: #222233}
+            </style>
             </head>
 
+            <body>
+            <p>hello <strong>world</strong></p>
             <p>$x+y=z \pi$</p>
             <p>$a \div b = z^2$</p>
             <p>$\\frac{2}{3}=5$</p>
             <p>$$\\frac{2}{3}=5$$</p>
             <p>欧拉公式：Euler's identity, <mathjax>$e^{i\pi} = -1$</mathjax>, is widely considered the most beautiful theorem in
-
             mathematics.</p>
-
+            </body>
         """, baseUrl)
 
         self.show()
-       
+
         # self.createTrayIcon()
         # self.trayIcon.show()
 
