@@ -3,11 +3,11 @@
 import sys
 from PyQt4.QtCore import QFile, QFileInfo, QTextStream, QUrl
 from PyQt4.QtGui import QApplication
-from PyQt4.QtWebKit import QWebView
+from PyQt4.QtWebKit import QWebView, QWebSettings
 
 pageSource = """<html><head>
 
-<script type="text/javascript" async src="file:///E:/newwork/MathJax-2.6-latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/javascript" async src="MathJax2.6/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </head><body>
 <p><mathjax>$$
 \imath x+y=z
@@ -26,5 +26,7 @@ fileUrl = QUrl.fromLocalFile(QFileInfo(tempFile).canonicalFilePath())
 webView = QWebView()
 webView.load(fileUrl)
 webView.show()
+myset = webView.settings()
+myset.setFontSize(QWebSettings.MinimumFontSize, 20)
 
 sys.exit(app.exec_())

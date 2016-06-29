@@ -6,27 +6,36 @@ class BrowserScreen(QWebView):
     def __init__(self):
         QWebView.__init__(self)
 
+        baseUrl = QUrl.fromLocalFile(QDir.current().absoluteFilePath("dummy.html"));
+
         self.resize(800, 600)
-        self.show()
-        self.setHtml("""
-        <script type="text/x-mathjax-config">
-  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
-</script>
-<script type="text/javascript" async src="file:///E:/newwork/MathJax-2.6-latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-
-<p>$x+y=z \pi$</p>
-<p>$a \div b = z^2$</p>
-<p>$\\frac{2}{3}=5$</p>
-<p>$$\\frac{2}{3}=5$$</p>
-<p>Euler's identity, <mathjax>$e^{i\pi} = -1$</mathjax>, is widely considered the most beautiful theorem in
-
-mathematics.</p>
-
-        """)
-
         myset = self.settings()
         # myset.setFontSize(QWebSettings.DefaultFontSize, 20)
         myset.setFontSize(QWebSettings.MinimumFontSize, 20)
+        
+        self.setHtml("""
+            <head>
+            <script type="text/x-mathjax-config">
+                MathJax.Hub.Config({
+                    tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+                });
+            </script>
+
+            <script type="text/javascript" async src="MathJax2.6/MathJax.js?config=TeX-MML-AM_HTMLorMML"></script>
+            </head>
+
+            <p>$x+y=z \pi$</p>
+            <p>$a \div b = z^2$</p>
+            <p>$\\frac{2}{3}=5$</p>
+            <p>$$\\frac{2}{3}=5$$</p>
+            <p>欧拉公式：Euler's identity, <mathjax>$e^{i\pi} = -1$</mathjax>, is widely considered the most beautiful theorem in
+
+            mathematics.</p>
+
+        """, baseUrl)
+
+        self.show()
+       
         # self.createTrayIcon()
         # self.trayIcon.show()
 
