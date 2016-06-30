@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 
-from PyQt4 import QtCore, QtGui
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
+from PyQt4.QtWebKit import *
 
-class Dialog(QtGui.QDialog):
+class Dialog(QDialog):
     NumGridRows = 3
     NumButtons = 4
 
@@ -11,21 +13,23 @@ class Dialog(QtGui.QDialog):
 
         self.createMenu()
         self.createHorizontalGroupBox()
+        self.createQuestionInfo()
         self.createGridGroupBox()
         self.createFormGroupBox()
 
-        bigEditor = QtGui.QTextEdit()
+        bigEditor = QTextEdit()
         bigEditor.setPlainText("This widget takes up all the remaining space "
                 "in the top-level layout.")
 
-        buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+        buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
 
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)
 
-        mainLayout = QtGui.QVBoxLayout()
+        mainLayout = QVBoxLayout()
         mainLayout.setMenuBar(self.menuBar)
         mainLayout.addWidget(self.horizontalGroupBox)
+        mainLayout.addWidget(self.quesInfoGroupBox)
         mainLayout.addWidget(self.gridGroupBox)
         mainLayout.addWidget(self.formGroupBox)
         mainLayout.addWidget(bigEditor)
@@ -35,38 +39,82 @@ class Dialog(QtGui.QDialog):
         self.setWindowTitle("Basic Layouts")
 
     def createMenu(self):
-        self.menuBar = QtGui.QMenuBar()
+        self.menuBar = QMenuBar()
 
-        self.fileMenu = QtGui.QMenu("&File", self)
+        self.fileMenu = QMenu("&File", self)
         self.exitAction = self.fileMenu.addAction("E&xit")
         self.menuBar.addMenu(self.fileMenu)
 
         self.exitAction.triggered.connect(self.accept)
 
+    def createQuestionInfo(self):
+        self.quesInfoGroupBox = QGroupBox("题目属性")
+        layout = QHBoxLayout()
+        layout.setMargin(10)
+        layout.setAlignment(Qt.AlignHCenter)
+
+        layout.addStretch(10)
+        label1 = QLabel("类别")
+        lineEdit1 = QComboBox()
+        layout.addWidget(label1)
+        layout.addWidget(lineEdit1)
+        
+        layout.addStretch(10)        
+        label2 = QLabel("题型")
+        lineEdit2 = QComboBox()
+        layout.addWidget(label2)
+        layout.addWidget(lineEdit2)
+
+        layout.addStretch(10)        
+        label3 = QLabel("年份")
+        lineEdit3 = QComboBox()
+        layout.addWidget(label3)
+        layout.addWidget(lineEdit3)
+
+        layout.addStretch(10)        
+        label4 = QLabel("关键字")
+        lineEdit4 = QLineEdit()
+        layout.addWidget(label4)
+        layout.addWidget(lineEdit4)
+
+        layout.addStretch(10) 
+        btn = QPushButton("查询")        
+        layout.addWidget(btn)
+
+        layout.addStretch(10)        
+        # layout.addStretch(10)        
+        # label.setBuddy(lineEdit)
+
+        # layout.setColumnStretch(0, 1)
+        # layout.setColumnMinimumWidth(0,20)
+        # layout.setColumnMinimumWidth(1,20)
+        # layout.setColumnStretch(1, 10)
+        self.quesInfoGroupBox.setLayout(layout)
+
     def createHorizontalGroupBox(self):
-        self.horizontalGroupBox = QtGui.QGroupBox("Horizontal layout")
-        layout = QtGui.QHBoxLayout()
+        self.horizontalGroupBox = QGroupBox("Horizontal layout")
+        layout = QHBoxLayout()
 
         for i in range(Dialog.NumButtons):
-            button = QtGui.QPushButton("Button %d" % (i + 1))
+            button = QPushButton("Button %d" % (i + 1))
             layout.addWidget(button)
 
         self.horizontalGroupBox.setLayout(layout)
 
     def createGridGroupBox(self):
-        self.gridGroupBox = QtGui.QGroupBox("题目信息填写")
-        layout = QtGui.QGridLayout()
+        self.gridGroupBox = QGroupBox("题目信息填写")
+        layout = QGridLayout()
 
         # for i in range(Dialog.NumGridRows):
-        #     label = QtGui.QLabel("Line %d:" % (i + 1))
-        #     lineEdit = QtGui.QLineEdit()
+        #     label = QLabel("Line %d:" % (i + 1))
+        #     lineEdit = QLineEdit()
         #     layout.addWidget(label, i + 1, 0)
         #     layout.addWidget(lineEdit, i + 1, 1)
 
 
-        self.questionEditor = QtGui.QTextEdit()
+        self.questionEditor = QTextEdit()
         self.questionEditor.setPlainText("题目信息填写")
-        self.answerEditor = QtGui.QTextEdit()
+        self.answerEditor = QTextEdit()
         self.answerEditor.setPlainText("答案信息填写")
 
         layout.addWidget(self.questionEditor, 0, 0)
@@ -77,11 +125,11 @@ class Dialog(QtGui.QDialog):
         self.gridGroupBox.setLayout(layout)
 
     def createFormGroupBox(self):
-        self.formGroupBox = QtGui.QGroupBox("Form layout")
-        layout = QtGui.QFormLayout()
-        layout.addRow(QtGui.QLabel("Line 1:"), QtGui.QLineEdit())
-        layout.addRow(QtGui.QLabel("Line 2, long text:"), QtGui.QComboBox())
-        layout.addRow(QtGui.QLabel("Line 3:"), QtGui.QSpinBox())
+        self.formGroupBox = QGroupBox("Form layout")
+        layout = QFormLayout()
+        layout.addRow(QLabel("Line 1:"), QLineEdit())
+        layout.addRow(QLabel("Line 2, long text:"), QComboBox())
+        layout.addRow(QLabel("Line 3:"), QSpinBox())
         self.formGroupBox.setLayout(layout)
 
 
@@ -89,6 +137,6 @@ if __name__ == '__main__':
 
     import sys
 
-    app = QtGui.QApplication(sys.argv)
+    app = QApplication(sys.argv)
     dialog = Dialog()
     sys.exit(dialog.exec_())
