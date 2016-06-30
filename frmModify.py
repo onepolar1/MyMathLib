@@ -3,6 +3,12 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.QtWebKit import *
+from myQwebview import myqwebview
+import markdown
+try: import mdx_mathjax
+except: pass
+
+mdProcessor = markdown.Markdown(extensions=['mathjax'])
 
 class Dialog(QDialog):
     NumGridRows = 3
@@ -11,41 +17,42 @@ class Dialog(QDialog):
     def __init__(self):
         super(Dialog, self).__init__()
 
-        self.createMenu()
-        self.createHorizontalGroupBox()
+        self.createQuestionDisp()
         self.createQuestionInfo()
-        self.createGridGroupBox()
-        self.createFormGroupBox()
-
-        bigEditor = QTextEdit()
-        bigEditor.setPlainText("This widget takes up all the remaining space "
-                "in the top-level layout.")
-
-        buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-
-        buttonBox.accepted.connect(self.accept)
-        buttonBox.rejected.connect(self.reject)
+        self.createQuestionEditor()
+        self.createHorizontalGroupBox()
 
         mainLayout = QVBoxLayout()
-        mainLayout.setMenuBar(self.menuBar)
-        mainLayout.addWidget(self.horizontalGroupBox)
         mainLayout.addWidget(self.quesInfoGroupBox)
-        mainLayout.addWidget(self.gridGroupBox)
-        mainLayout.addWidget(self.formGroupBox)
-        mainLayout.addWidget(bigEditor)
-        mainLayout.addWidget(buttonBox)
+        mainLayout.addWidget(self.quesDispGroupBox)
+        mainLayout.addWidget(self.quesEditorGroupBox)
+        mainLayout.addWidget(self.horizontalGroupBox)
+
         self.setLayout(mainLayout)
 
-        self.setWindowTitle("Basic Layouts")
+        self.setWindowTitle("题目信息维护")
 
-    def createMenu(self):
-        self.menuBar = QMenuBar()
+    def refreshDisp(self):
+        pass
+        # quesStr = self.
 
-        self.fileMenu = QMenu("&File", self)
-        self.exitAction = self.fileMenu.addAction("E&xit")
-        self.menuBar.addMenu(self.fileMenu)
+    def createQuestionDisp(self):
+        self.quesDispGroupBox = QGroupBox("题目显示效果")
+        layout = QGridLayout()
 
-        self.exitAction.triggered.connect(self.accept)
+        self.questionDisp = myqwebview()
+        somestr = mdProcessor.convert("$a=b^2$")
+        self.questionDisp.setHtmlString(somestr)
+        self.answerDisp = myqwebview()
+        somestr = mdProcessor.convert("$s = \pi \\times r^2$")
+        self.answerDisp.setHtmlString(somestr)
+
+        layout.addWidget(self.questionDisp, 0, 0)
+        layout.addWidget(self.answerDisp, 0, 1)
+
+        layout.setColumnStretch(0, 10)
+        layout.setColumnStretch(1, 10)
+        self.quesDispGroupBox.setLayout(layout)
 
     def createQuestionInfo(self):
         self.quesInfoGroupBox = QGroupBox("题目属性")
@@ -58,31 +65,31 @@ class Dialog(QDialog):
         lineEdit1 = QComboBox()
         layout.addWidget(label1)
         layout.addWidget(lineEdit1)
-        
-        layout.addStretch(10)        
+
+        layout.addStretch(10)
         label2 = QLabel("题型")
         lineEdit2 = QComboBox()
         layout.addWidget(label2)
         layout.addWidget(lineEdit2)
 
-        layout.addStretch(10)        
+        layout.addStretch(10)
         label3 = QLabel("年份")
         lineEdit3 = QComboBox()
         layout.addWidget(label3)
         layout.addWidget(lineEdit3)
 
-        layout.addStretch(10)        
+        layout.addStretch(10)
         label4 = QLabel("关键字")
         lineEdit4 = QLineEdit()
         layout.addWidget(label4)
         layout.addWidget(lineEdit4)
 
-        layout.addStretch(10) 
-        btn = QPushButton("查询")        
+        layout.addStretch(10)
+        btn = QPushButton("查询")
         layout.addWidget(btn)
 
-        layout.addStretch(10)        
-        # layout.addStretch(10)        
+        layout.addStretch(10)
+        # layout.addStretch(10)
         # label.setBuddy(lineEdit)
 
         # layout.setColumnStretch(0, 1)
@@ -92,24 +99,25 @@ class Dialog(QDialog):
         self.quesInfoGroupBox.setLayout(layout)
 
     def createHorizontalGroupBox(self):
-        self.horizontalGroupBox = QGroupBox("Horizontal layout")
+        self.horizontalGroupBox = QGroupBox()
         layout = QHBoxLayout()
 
-        for i in range(Dialog.NumButtons):
-            button = QPushButton("Button %d" % (i + 1))
-            layout.addWidget(button)
+        btnFresh = QPushButton("预览")
+        btnSave = QPushButton("保存")
+        btnClean = QPushButton("清空")
+        btnClose = QPushButton("关闭")
 
+        layout.addWidget(btnFresh)
+        layout.addWidget(btnSave)
+        layout.addWidget(btnClean)
+        layout.addWidget(btnClose)
+
+        btnClose.clicked.connect(self.accept)
         self.horizontalGroupBox.setLayout(layout)
 
-    def createGridGroupBox(self):
-        self.gridGroupBox = QGroupBox("题目信息填写")
+    def createQuestionEditor(self):
+        self.quesEditorGroupBox = QGroupBox("题目信息填写")
         layout = QGridLayout()
-
-        # for i in range(Dialog.NumGridRows):
-        #     label = QLabel("Line %d:" % (i + 1))
-        #     lineEdit = QLineEdit()
-        #     layout.addWidget(label, i + 1, 0)
-        #     layout.addWidget(lineEdit, i + 1, 1)
 
 
         self.questionEditor = QTextEdit()
@@ -122,21 +130,11 @@ class Dialog(QDialog):
 
         layout.setColumnStretch(0, 10)
         layout.setColumnStretch(1, 10)
-        self.gridGroupBox.setLayout(layout)
-
-    def createFormGroupBox(self):
-        self.formGroupBox = QGroupBox("Form layout")
-        layout = QFormLayout()
-        layout.addRow(QLabel("Line 1:"), QLineEdit())
-        layout.addRow(QLabel("Line 2, long text:"), QComboBox())
-        layout.addRow(QLabel("Line 3:"), QSpinBox())
-        self.formGroupBox.setLayout(layout)
+        self.quesEditorGroupBox.setLayout(layout)
 
 
 if __name__ == '__main__':
-
     import sys
-
     app = QApplication(sys.argv)
     dialog = Dialog()
     sys.exit(dialog.exec_())
