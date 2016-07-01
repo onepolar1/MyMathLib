@@ -14,6 +14,7 @@ class myqwebview(QWebView):
         myset.setFontSize(QWebSettings.MinimumFontSize, 20)
 
         self.htmlStr1 = """
+            <html>
             <head>
             <script type="text/x-mathjax-config">
                 MathJax.Hub.Config({
@@ -31,6 +32,7 @@ class myqwebview(QWebView):
             """
         self.htmlStr2 = """
             </body>
+            </html>
             """
 
         tmpstr =  """

@@ -33,7 +33,12 @@ class Dialog(QDialog):
         self.setWindowTitle("题目信息维护")
 
     def refreshDisp(self):
-        pass
+        questionstr = self.questionEditor.toPlainText()
+        answerstr = self.answerEditor.toPlainText()
+        print(mdProcessor.convert(questionstr))
+        print(markdown.markdown(questionstr))
+        self.questionDisp.setHtmlString(mdProcessor.convert(questionstr))
+        self.answerDisp.setHtmlString(mdProcessor.convert(answerstr))
         # quesStr = self.
 
     def createQuestionDisp(self):
@@ -112,6 +117,7 @@ class Dialog(QDialog):
         layout.addWidget(btnClean)
         layout.addWidget(btnClose)
 
+        btnFresh.clicked.connect(self.refreshDisp)
         btnClose.clicked.connect(self.accept)
         self.horizontalGroupBox.setLayout(layout)
 

@@ -8,10 +8,11 @@ class BrowserScreen(QWebView):
 
         baseUrl = QUrl.fromLocalFile(QDir.current().absoluteFilePath("dummy.html"));
 
-        self.resize(800, 600)
+        # self.resize(800, 600)
         myset = self.settings()
         # myset.setFontSize(QWebSettings.DefaultFontSize, 20)
         myset.setFontSize(QWebSettings.MinimumFontSize, 20)
+        myset.setObjectCacheCapacities(0, 0, 0)
 
         self.setHtml("""
             <head>
