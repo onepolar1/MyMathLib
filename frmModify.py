@@ -37,25 +37,24 @@ class Dialog(QDialog):
 
         self.setWindowTitle("题目信息维护")
 
-    def refreshDisp(self):
+    def refreshQuestionDisp(self):
         questionstr = self.questionEditor.toPlainText()
-        answerstr = self.answerEditor.toPlainText()
-        # print(mdProcessor.convert(questionstr))
-        # print(markdown.markdown(questionstr))
         self.questionDisp.setHtmlString(mdProcessor.convert(questionstr))
+
+    def refreshAnswerDisp(self):
+        answerstr = self.answerEditor.toPlainText()
         self.answerDisp.setHtmlString(mdProcessor.convert(answerstr))
-        # quesStr = self.
 
     def createQuestionDisp(self):
         self.quesDispGroupBox = QGroupBox("题目显示效果")
         layout = QGridLayout()
 
         self.questionDisp = myqwebview()
-        somestr = mdProcessor.convert("$a=b^2$")
-        self.questionDisp.setHtmlString(somestr)
+        # somestr = mdProcessor.convert("$a=b^2$")
+        self.questionDisp.setHtmlString("")
         self.answerDisp = myqwebview()
-        somestr = mdProcessor.convert("$s = \pi \\times r^2$")
-        self.answerDisp.setHtmlString(somestr)
+        # somestr = mdProcessor.convert("$s = \pi \\times r^2$")
+        self.answerDisp.setHtmlString("")
 
         layout.addWidget(self.questionDisp, 0, 0)
         layout.addWidget(self.answerDisp, 0, 1)
@@ -114,38 +113,50 @@ class Dialog(QDialog):
         self.horizontalGroupBox = QGroupBox()
         layout = QHBoxLayout()
 
-        btnFresh = QPushButton("预览")
+        # btnFresh = QPushButton("预览")
         btnSave = QPushButton("保存")
         btnClean = QPushButton("清空")
         btnClose = QPushButton("关闭")
 
-        layout.addWidget(btnFresh)
+        # layout.addWidget(btnFresh)
         layout.addWidget(btnSave)
         layout.addWidget(btnClean)
         layout.addWidget(btnClose)
 
-        btnFresh.clicked.connect(self.refreshDisp)
+        # btnFresh.clicked.connect(self.refreshDisp)
         btnClose.clicked.connect(self.accept)
         self.horizontalGroupBox.setLayout(layout)
 
     def insertImg(self):
         tmpstr = self.questionEditor.toPlainText()
-        tmpstr += '''<img src="images/XXXXX.png" height="20" width="20" />'''
+        tmpstr += '''<img src="images/trash.png" height="20" width="20" />'''
         self.questionEditor.setPlainText(tmpstr)
+
+    def insertImg2(self):
+        tmpstr = self.answerEditor.toPlainText()
+        tmpstr += '''<img src="images/trash.png" height="20" width="20" />'''
+        self.answerEditor.setPlainText(tmpstr)
+
 
     def createQuestionEditor(self):
         self.quesEditorGroupBox = QGroupBox("题目信息填写")
         layout = QGridLayout()
 
         btnInsertImg = QPushButton("插入图片")
-        btnInsertImg.clicked.connect(self.insertImg)
+        btnInsertImg2 = QPushButton("插入图片")
 
         self.questionEditor = QTextEdit()
         self.questionEditor.setPlainText("题目信息填写")
+        self.questionEditor.textChanged.connect(self.refreshQuestionDisp)
         self.answerEditor = QTextEdit()
         self.answerEditor.setPlainText("答案信息填写")
+        self.answerEditor.textChanged.connect(self.refreshAnswerDisp)
+
+        btnInsertImg.clicked.connect(self.insertImg)
+        btnInsertImg2.clicked.connect(self.insertImg2)
 
         layout.addWidget(btnInsertImg, 0, 0, Qt.AlignLeft)
+        layout.addWidget(btnInsertImg2, 0, 1, Qt.AlignLeft)
         layout.addWidget(self.questionEditor, 1, 0)
         layout.addWidget(self.answerEditor, 1, 1)
 
