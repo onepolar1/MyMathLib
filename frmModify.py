@@ -22,12 +22,17 @@ class Dialog(QDialog):
         self.createQuestionEditor()
         self.createHorizontalGroupBox()
 
-        mainLayout = QVBoxLayout()
-        mainLayout.addWidget(self.quesInfoGroupBox)
-        mainLayout.addWidget(self.quesDispGroupBox)
-        mainLayout.addWidget(self.quesEditorGroupBox)
-        mainLayout.addWidget(self.horizontalGroupBox)
+        # mainLayout = QVBoxLayout()
+        mainLayout = QGridLayout()
+        mainLayout.addWidget(self.quesInfoGroupBox, 0, 0)
+        mainLayout.addWidget(self.quesDispGroupBox, 1, 0)
+        mainLayout.addWidget(self.quesEditorGroupBox, 2, 0)
+        mainLayout.addWidget(self.horizontalGroupBox, 3, 0)
 
+        mainLayout.setRowStretch(0, 1)
+        mainLayout.setRowStretch(1, 10)
+        mainLayout.setRowStretch(2, 10)
+        mainLayout.setRowStretch(3, 1)
         self.setLayout(mainLayout)
 
         self.setWindowTitle("题目信息维护")
@@ -35,8 +40,8 @@ class Dialog(QDialog):
     def refreshDisp(self):
         questionstr = self.questionEditor.toPlainText()
         answerstr = self.answerEditor.toPlainText()
-        print(mdProcessor.convert(questionstr))
-        print(markdown.markdown(questionstr))
+        # print(mdProcessor.convert(questionstr))
+        # print(markdown.markdown(questionstr))
         self.questionDisp.setHtmlString(mdProcessor.convert(questionstr))
         self.answerDisp.setHtmlString(mdProcessor.convert(answerstr))
         # quesStr = self.
@@ -57,6 +62,8 @@ class Dialog(QDialog):
 
         layout.setColumnStretch(0, 10)
         layout.setColumnStretch(1, 10)
+        # layout.setRowMinimumHeight(0, 100)
+        # layout.setRowMinimumHeight(1, 100)
         self.quesDispGroupBox.setLayout(layout)
 
     def createQuestionInfo(self):
@@ -121,18 +128,26 @@ class Dialog(QDialog):
         btnClose.clicked.connect(self.accept)
         self.horizontalGroupBox.setLayout(layout)
 
+    def insertImg(self):
+        tmpstr = self.questionEditor.toPlainText()
+        tmpstr += '''<img src="images/XXXXX.png" height="20" width="20" />'''
+        self.questionEditor.setPlainText(tmpstr)
+
     def createQuestionEditor(self):
         self.quesEditorGroupBox = QGroupBox("题目信息填写")
         layout = QGridLayout()
 
+        btnInsertImg = QPushButton("插入图片")
+        btnInsertImg.clicked.connect(self.insertImg)
 
         self.questionEditor = QTextEdit()
         self.questionEditor.setPlainText("题目信息填写")
         self.answerEditor = QTextEdit()
         self.answerEditor.setPlainText("答案信息填写")
 
-        layout.addWidget(self.questionEditor, 0, 0)
-        layout.addWidget(self.answerEditor, 0, 1)
+        layout.addWidget(btnInsertImg, 0, 0, Qt.AlignLeft)
+        layout.addWidget(self.questionEditor, 1, 0)
+        layout.addWidget(self.answerEditor, 1, 1)
 
         layout.setColumnStretch(0, 10)
         layout.setColumnStretch(1, 10)

@@ -23,8 +23,9 @@ class myqwebview(QWebView):
             </script>
             <script type="text/javascript" async src="MathJax2.6/MathJax.js?config=TeX-MML-AM_HTMLorMML"></script>
             <style>
-                p { color: #000000; }
+                p { color: #000000; line-height:50%}
                 strong {color: #222233}
+                body {background-color: #ddd}
             </style>
             </head>
 
@@ -46,6 +47,7 @@ class myqwebview(QWebView):
             """
 
         self.setHtmlString(tmpstr)
+        self.setZoomFactor(1)
         # self.setHtml(self.htmlStr, baseUrl)
 
         self.show()
