@@ -2,9 +2,9 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.QtSql import *
 
-class CategoryDlg(QDialog):
+class WhichyearDlg(QDialog):
     def __init__(self, parent=None):
-        super(CategoryDlg,self).__init__(parent)
+        super(WhichyearDlg,self).__init__(parent)
         # self.setStyleSheet("background-image:url('image/panelbg.jpg'); border: 2px; border-radius 2px;")
 
         self.db = QSqlDatabase.addDatabase("QSQLITE");
@@ -15,7 +15,7 @@ class CategoryDlg(QDialog):
 
         tabtitle = QLabel()
         tabtitle.setFont(QFont('Courier New', 20))
-        tabtitle.setText("题目类别信息维护")
+        tabtitle.setText("题目所属学年维护")
         tabtitle.setStyleSheet("border: 1px solid blue; color:rgba(0,0,255, 220);\
             background-color:rgba(201,201,201,60);\
             border-radius: 6px; \
@@ -31,28 +31,28 @@ class CategoryDlg(QDialog):
         self.QuestionModel.setTable("questiontable")
 
         # Create the question category View
-        self.QuesCategoryView = QTableView()
-        self.QuesCategoryModel = QSqlTableModel(self.QuesCategoryView)
-        self.QuesCategoryModel.setTable("categorytable")
-        # self.QuesCategoryModel.setRelation(2, QSqlRelation("mentalmodel", "id", "name"));
-        self.QuesCategoryModel.setEditStrategy(QSqlTableModel.OnManualSubmit)
-        self.QuesCategoryModel.select()
-        self.QuesCategoryModel.setHeaderData(0, Qt.Horizontal, "题目类别名称")
+        self.WhichyearView = QTableView()
+        self.WhichyearModel = QSqlTableModel(self.WhichyearView)
+        self.WhichyearModel.setTable("yearstable")
+        # self.WhichyearModel.setRelation(2, QSqlRelation("mentalmodel", "id", "name"));
+        self.WhichyearModel.setEditStrategy(QSqlTableModel.OnManualSubmit)
+        self.WhichyearModel.select()
+        self.WhichyearModel.setHeaderData(0, Qt.Horizontal, "题目所属学年")
 
 
-        # for indx, iheader in enumerate(["categoryid", "QuesCategory"]):
-        #     self.QuesCategoryModel.setHeaderData(indx+1, Qt.Horizontal, iheader)
+        # for indx, iheader in enumerate(["categoryid", "QuesWhichyear"]):
+        #     self.WhichyearModel.setHeaderData(indx+1, Qt.Horizontal, iheader)
 
-        self.QuesCategoryView.setModel(self.QuesCategoryModel)
-        # self.QuesCategoryView.setColumnHidden(0, True)
-        # self.QuesCategoryView.show()
-        self.QuesCategoryView.verticalHeader().setFixedWidth(30)
-        self.QuesCategoryView.verticalHeader().setStyleSheet("color: red;font-size:20px; ");
-        self.QuesCategoryView.setStyleSheet("QTableView{background-color: rgb(250, 250, 200, 0);"
+        self.WhichyearView.setModel(self.WhichyearModel)
+        # self.WhichyearView.setColumnHidden(0, True)
+        # self.WhichyearView.show()
+        self.WhichyearView.verticalHeader().setFixedWidth(30)
+        self.WhichyearView.verticalHeader().setStyleSheet("color: red;font-size:20px; ");
+        self.WhichyearView.setStyleSheet("QTableView{background-color: rgb(250, 250, 200, 0);"
                     "alternate-background-color: rgb(141, 163, 0);}"
                     "QTableView::item:hover {background-color: rgba(100,200,220,100);} ")
-        self.QuesCategoryView.setStyleSheet("font-size:16px; ");
-        self.QuesCategoryView.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.WhichyearView.setStyleSheet("font-size:16px; ");
+        self.WhichyearView.setSelectionMode(QAbstractItemView.SingleSelection)
 
         btn_layout = QHBoxLayout()
         newusrbtn       = QPushButton("新增")
@@ -66,16 +66,16 @@ class CategoryDlg(QDialog):
         btn_layout.addWidget(revertbtn)
         btn_layout.addWidget(removebtn)
 
-        newusrbtn.clicked.connect(self.newCategory)
-        savebtn.clicked.connect(self.saveCategory)
-        revertbtn.clicked.connect(self.revertCategory)
-        removebtn.clicked.connect(self.removeCategory)
+        newusrbtn.clicked.connect(self.newWhichyear)
+        savebtn.clicked.connect(self.saveWhichyear)
+        revertbtn.clicked.connect(self.revertWhichyear)
+        removebtn.clicked.connect(self.removeWhichyear)
 
-        self.QuesCategoryView.doubleClicked.connect(self.dbclick)
+        self.WhichyearView.doubleClicked.connect(self.dbclick)
 
         lst_layout = QVBoxLayout()
         lst_layout.addLayout(titleLayout)
-        lst_layout.addWidget(self.QuesCategoryView)
+        lst_layout.addWidget(self.WhichyearView)
         lst_layout.addLayout(btn_layout)
 
         self.setLayout(lst_layout)
@@ -93,13 +93,13 @@ class CategoryDlg(QDialog):
             # self.g_curcategory = category
             # self.tabWidget.setTabText(0, self.g_curcategory)
 
-    #######======= CategoryModel ============###############
-    def newCategory(self):
-        row = self.QuesCategoryModel.rowCount()
-        self.QuesCategoryModel.insertRow(row)
+    #######======= WhichyearModel ============###############
+    def newWhichyear(self):
+        row = self.WhichyearModel.rowCount()
+        self.WhichyearModel.insertRow(row)
 
-    def removeCategory(self):
-        index = self.QuesCategoryView.currentIndex()
+    def removeWhichyear(self):
+        index = self.WhichyearView.currentIndex()
         # print(type(index.sibling(index.row(),0).data()) == QPyNullVariant)
         if type(index.sibling(index.row(),0).data()) == type(None):
             return
@@ -107,39 +107,39 @@ class CategoryDlg(QDialog):
             return
 
         row = index.row()
-        curCategoryname =  index.sibling(index.row(),0).data()
-        strwhere = "Categoryname like '" + curCategoryname + "'"
+        curWhichyearname =  index.sibling(index.row(),0).data()
+        strwhere = "whichyear like '" + curWhichyearname + "'"
         self.QuestionModel.setFilter(strwhere)
         self.QuestionModel.select()
 
         # print(self.QuestionModel.rowCount(), "----", )
-        if QMessageBox.question(self, "删除确认", "删除题目类别意味着删除所有该类别题目。是否要删除当前选中记录？", "确定", "取消") == 0:
-            self.QuesCategoryModel.removeRows(row, 1)
-            self.QuesCategoryModel.submitAll()
-            self.QuesCategoryModel.database().commit()
+        if QMessageBox.question(self, "删除确认", "删除该条目意味着删除所有该学年的题目。是否要删除当前选中记录？", "确定", "取消") == 0:
+            self.WhichyearModel.removeRows(row, 1)
+            self.WhichyearModel.submitAll()
+            self.WhichyearModel.database().commit()
 
             self.QuestionModel.removeRows(0, self.QuestionModel.rowCount())
             self.QuestionModel.submitAll()
             self.QuestionModel.database().commit()
 
-    def revertCategory(self):
-        self.QuesCategoryModel.revertAll()
-        self.QuesCategoryModel.database().rollback()
+    def revertWhichyear(self):
+        self.WhichyearModel.revertAll()
+        self.WhichyearModel.database().rollback()
 
-    def saveCategory(self):
-        # Update the Category Table
-        self.QuesCategoryModel.database().transaction()
-        if self.QuesCategoryModel.submitAll():
-            self.QuesCategoryModel.database().commit()
+    def saveWhichyear(self):
+        # Update the Whichyear Table
+        self.WhichyearModel.database().transaction()
+        if self.WhichyearModel.submitAll():
+            self.WhichyearModel.database().commit()
             # print("save success!  ->commit")
         else:
-            QMessageBox.warning(None, "错误",  "请检查类别名称，不能出现同名类别！")
-            self.QuesCategoryModel.revertAll()
-            self.QuesCategoryModel.database().rollback()
+            QMessageBox.warning(None, "错误",  "请检查学年名称，不能出现同名学年！")
+            self.WhichyearModel.revertAll()
+            self.WhichyearModel.database().rollback()
 
 if __name__ == "__main__":
     import sys
     app=QApplication(sys.argv)
-    dialog=CategoryDlg()
+    dialog=WhichyearDlg()
     dialog.show()
     app.exec_()
