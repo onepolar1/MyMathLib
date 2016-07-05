@@ -11,6 +11,8 @@ pageSource = """<html><head>
 </head><body>
 <p><mathjax>$$
 \imath x+y=z
+\pi \\\\
+\\frac{1}{3}
 $$</mathjax></p>
 </body></html>"""
 
