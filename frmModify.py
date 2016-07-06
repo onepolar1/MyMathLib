@@ -1,14 +1,19 @@
 #!/usr/bin/env python
 from resources import *
 
-class QuesModifyDlg(QDialog):  
+class QuesModifyDlg(QDialog):
     def __init__(self, parent=None,  db="", curuser=""):
         super(QuesModifyDlg, self).__init__()
+
+        if db == "":
+            self.db = globaldb()
+        else:
+            self.db = db
 
         self.createQuestionDisp()
         self.createQuestionInfo()
         self.createQuestionEditor()
-        self.createHorizontalGroupBox()
+        self.createButtons()
 
         # mainLayout = QVBoxLayout()
         mainLayout = QGridLayout()
@@ -53,39 +58,49 @@ class QuesModifyDlg(QDialog):
         # layout.setRowMinimumHeight(1, 100)
         self.quesDispGroupBox.setLayout(layout)
 
+    def selectComboxItems(self, sqlstr):
+        query = QSqlQuery(self.db)
+        ret= query.exec_(sqlstr)
+        lstitems = []
+        while query.next():
+            lstitems.append(query.value(0))
+        return lstitems
+
     def createQuestionInfo(self):
-        self.quesInfoGroupBox = QGroupBox("题目属性")
+        self.quesInfoGroupBox = QGroupBox("设置题目属性")
         layout = QHBoxLayout()
         layout.setMargin(10)
         layout.setAlignment(Qt.AlignHCenter)
 
         layout.addStretch(10)
         label1 = QLabel("类别")
-        lineEdit1 = QComboBox()
+        self.quesCategoryCombox = QComboBox()
+        lstitems = self.selectComboxItems("select category  from categorytable")
+        self.quesCategoryCombox.addItems(lstitems)
+        # self.quesCategoryCombox.insertItem(0, "")
+        self.quesCategoryCombox.setCurrentIndex(0)
         layout.addWidget(label1)
-        layout.addWidget(lineEdit1)
+        layout.addWidget(self.quesCategoryCombox)
 
         layout.addStretch(10)
         label2 = QLabel("题型")
-        lineEdit2 = QComboBox()
+        self.quesTypeCombox = QComboBox()
+        lstitems = self.selectComboxItems("select questiontype  from questypetable")
+        self.quesTypeCombox.addItems(lstitems)
+        # self.quesTypeCombox.insertItem(0, "")
+        self.quesTypeCombox.setCurrentIndex(0)
         layout.addWidget(label2)
-        layout.addWidget(lineEdit2)
+        layout.addWidget(self.quesTypeCombox)
 
         layout.addStretch(10)
         label3 = QLabel("年份")
-        lineEdit3 = QComboBox()
+        self.quesWhichyearCombox = QComboBox()
+        lstitems = self.selectComboxItems("select whichyear  from yearstable")
+        self.quesWhichyearCombox.addItems(lstitems)
+        # self.quesWhichyearCombox.insertItem(0, "")
+        self.quesWhichyearCombox.setCurrentIndex(0)
         layout.addWidget(label3)
-        layout.addWidget(lineEdit3)
-
-        layout.addStretch(10)
-        label4 = QLabel("关键字")
-        lineEdit4 = QLineEdit()
-        layout.addWidget(label4)
-        layout.addWidget(lineEdit4)
-
-        layout.addStretch(10)
-        btn = QPushButton("查询")
-        layout.addWidget(btn)
+        layout.addWidget(self.quesWhichyearCombox)
 
         layout.addStretch(10)
         # layout.addStretch(10)
@@ -97,7 +112,7 @@ class QuesModifyDlg(QDialog):
         # layout.setColumnStretch(1, 10)
         self.quesInfoGroupBox.setLayout(layout)
 
-    def createHorizontalGroupBox(self):
+    def createButtons(self):
         self.horizontalGroupBox = QGroupBox()
         layout = QHBoxLayout()
 
@@ -113,8 +128,29 @@ class QuesModifyDlg(QDialog):
         layout.addWidget(btnClose)
 
         # btnFresh.clicked.connect(self.refreshDisp)
+        btnSave.clicked.connect(self.saveQuestion)
         btnClose.clicked.connect(self.accept)
         self.horizontalGroupBox.setLayout(layout)
+
+    def saveQuestion(self):
+        quesCategory    = self.quesCategoryCombox.currentText()
+        quesType        = self.quesTypeCombox.currentText()
+        quesWhichyear   = self.quesWhichyearCombox.currentText()
+        question        = self.questionEditor.toPlainText()
+        answer          = self.answerEditor.toPlainText()
+        print(quesCategory, quesType, quesWhichyear, question, answer)
+
+        query = QSqlQuery(self.db)
+        query.prepare("insert into questiontable \
+            (questionhtml, answerhtml, category, questiontype, whichyear, demo) \
+            values (:questionhtml, :answerhtml, :category, :questiontype, :whichyear, :demo)")
+        query.bindValue(":questionhtml", question)
+        query.bindValue(":answerhtml", answer)
+        query.bindValue(":category", quesCategory)
+        query.bindValue(":questiontype", quesType)
+        query.bindValue(":whichyear", quesWhichyear)
+        query.bindValue(":demo", '')
+        query.exec_()
 
     def insertImg(self):
         tmpstr = self.questionEditor.toPlainText()

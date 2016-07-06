@@ -8,7 +8,7 @@ class QuestionDlg(QDialog):
         if db == "":
             self.db = globaldb()
         else:
-            self.db = db        
+            self.db = db
 
         self.createQuestionInfo()
 
@@ -31,7 +31,7 @@ class QuestionDlg(QDialog):
 
         self.QuestionModel.setEditStrategy(QSqlTableModel.OnManualSubmit)
         self.QuestionModel.select()
-       
+
         for indx, iheader in enumerate(["题目", "答案", "类别", "题型", "年度", "备注"]):
             self.QuestionModel.setHeaderData(indx, Qt.Horizontal, iheader)
 
@@ -69,11 +69,19 @@ class QuestionDlg(QDialog):
         self.QuestionView.doubleClicked.connect(self.dbclick)
 
         lst_layout = QVBoxLayout()
-        lst_layout.addWidget(self.quesInfoGroupBox)        
+        lst_layout.addWidget(self.quesInfoGroupBox)
         lst_layout.addWidget(self.QuestionView)
         lst_layout.addLayout(btn_layout)
 
         self.setLayout(lst_layout)
+
+    def selectComboxItems(self, sqlstr):
+        query = QSqlQuery(self.db)
+        ret= query.exec_(sqlstr)
+        lstitems = []
+        while query.next():
+            lstitems.append(query.value(0))
+        return lstitems
 
     def createQuestionInfo(self):
         self.quesInfoGroupBox = QGroupBox("题目属性")
@@ -84,18 +92,30 @@ class QuestionDlg(QDialog):
         layout.addStretch(10)
         label1 = QLabel("类别")
         lineEdit1 = QComboBox()
+        lstitems = self.selectComboxItems("select category  from categorytable")
+        lineEdit1.addItems(lstitems)
+        # lineEdit1.insertItem(0, "")
+        lineEdit1.setCurrentIndex(0)
         layout.addWidget(label1)
         layout.addWidget(lineEdit1)
 
         layout.addStretch(10)
         label2 = QLabel("题型")
         lineEdit2 = QComboBox()
+        lstitems = self.selectComboxItems("select questiontype  from questypetable")
+        lineEdit2.addItems(lstitems)
+        # lineEdit2.insertItem(0, "")
+        lineEdit2.setCurrentIndex(0)
         layout.addWidget(label2)
         layout.addWidget(lineEdit2)
 
         layout.addStretch(10)
         label3 = QLabel("年份")
         lineEdit3 = QComboBox()
+        lstitems = self.selectComboxItems("select whichyear  from yearstable")
+        lineEdit3.addItems(lstitems)
+        # lineEdit3.insertItem(0, "")
+        lineEdit3.setCurrentIndex(0)
         layout.addWidget(label3)
         layout.addWidget(lineEdit3)
 
@@ -108,20 +128,20 @@ class QuestionDlg(QDialog):
         layout.addStretch(10)
         btn = QPushButton("查询")
         layout.addWidget(btn)
-        layout.addStretch(10)       
+        layout.addStretch(10)
 
         self.quesInfoGroupBox.setLayout(layout)
 
     def dbclick(self, indx):
         if indx.column() == 0 or indx.column() == 1:
-            self.StudentView.setEditTriggers(QAbstractItemView.NoEditTriggers)
+            self.QuestionView.setEditTriggers(QAbstractItemView.NoEditTriggers)
         else:
-            self.StudentView.setEditTriggers(QAbstractItemView.DoubleClicked)
+            self.QuestionView.setEditTriggers(QAbstractItemView.DoubleClicked)
 
     #######======= QuestionModel ============###############
     def newQuestion(self):
         pass
-        
+
     def removeQuestion(self):
         index = self.QuestionView.currentIndex()
         if type(index.sibling(index.row(),0).data()) == type(None):
@@ -140,7 +160,7 @@ class QuestionDlg(QDialog):
 
     def modifyQuestion(self):
         pass
-       
+
     def saveQuestion(self):
         self.QuestionModel.database().transaction()
         if self.QuestionModel.submitAll():
