@@ -1,21 +1,9 @@
 #!/usr/bin/env python
+from resources import *
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from PyQt4.QtWebKit import *
-from myQwebview import myqwebview
-import markdown
-try: import mdx_mathjax
-except: pass
-
-mdProcessor = markdown.Markdown(extensions=['mathjax'])
-
-class Dialog(QDialog):
-    NumGridRows = 3
-    NumButtons = 4
-
-    def __init__(self):
-        super(Dialog, self).__init__()
+class QuesModifyDlg(QDialog):  
+    def __init__(self, parent=None,  db="", curuser=""):
+        super(QuesModifyDlg, self).__init__()
 
         self.createQuestionDisp()
         self.createQuestionInfo()
@@ -119,6 +107,7 @@ class Dialog(QDialog):
         btnClose = QPushButton("关闭")
 
         # layout.addWidget(btnFresh)
+        layout.addStretch(10)
         layout.addWidget(btnSave)
         layout.addWidget(btnClean)
         layout.addWidget(btnClose)
@@ -168,5 +157,5 @@ class Dialog(QDialog):
 if __name__ == '__main__':
     import sys
     app = QApplication(sys.argv)
-    dialog = Dialog()
-    sys.exit(dialog.exec_())
+    dlg = QuesModifyDlg()
+    sys.exit(dlg.exec_())

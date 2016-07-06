@@ -1,17 +1,15 @@
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from PyQt4.QtSql import *
+#!/usr/bin/env python
+from resources import *
 
 class CategoryDlg(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, db="", curuser=""):
         super(CategoryDlg,self).__init__(parent)
         # self.setStyleSheet("background-image:url('image/panelbg.jpg'); border: 2px; border-radius 2px;")
 
-        self.db = QSqlDatabase.addDatabase("QSQLITE");
-        self.db.setDatabaseName("myQuestion.db")
-        if not self.db.open():
-            QMessageBox.warning(None, "错误",  "数据库连接失败: %s" % self.db.lastError().text())
-            sys.exit(1)
+        if db == "":
+            self.db = globaldb()
+        else:
+            self.db = db 
 
         tabtitle = QLabel()
         tabtitle.setFont(QFont('Courier New', 20))
