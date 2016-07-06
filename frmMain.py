@@ -11,7 +11,6 @@ from frmWhichyear import WhichyearDlg
 class MainWindow(QMainWindow):
     def __init__(self, db="", curuser = {}):
         super(MainWindow, self).__init__()
-        # print(1)
 
         self.setAttribute(Qt.WA_DeleteOnClose)
         self.tabWidget=QTabWidget(self)
@@ -19,13 +18,8 @@ class MainWindow(QMainWindow):
         if db == "":
             self.db = globaldb()
         else:
-            self.db = db 
+            self.db = db
 
-        # self.db.close()
-
-        # print(self.db.connectionName())
-        # self.closeEvent.connect(self.closeWindow())
-        
         self.curuser = curuser
 
         self.tabWidget.setTabsClosable(True)
@@ -58,7 +52,7 @@ class MainWindow(QMainWindow):
         # self.resize(720,600)
 
         self.setStyleSheet("font-size:14px;")
-        
+
         # self.createDb()
 
     def closeEvent(self, event):
@@ -87,7 +81,7 @@ class MainWindow(QMainWindow):
 
     def userManage(self):
         QMessageBox.warning(self, "提示", "待添加")
-        
+
         # if self.curuser != {}:
         #     if self.curuser["unitgroup"] != "市残联":
         #         QMessageBox.warning(self, "没有授权", "当前用户没有权限进行该操作！")
@@ -102,7 +96,25 @@ class MainWindow(QMainWindow):
         # widget = UserDlg(db=self.db)
         # self.tabWidget.addTab(widget,curTabText)
         # self.tabWidget.setCurrentWidget(widget)
-        
+
+    def QuestionManage(self):
+        # if self.curuser != {}:
+        #     if self.curuser["unitgroup"] != "市残联" and self.curuser["unitgroup"] != "区残联":
+        #         QMessageBox.warning(self, "没有授权", "当前用户没有权限进行该操作！")
+        #         return
+
+        curTabText = "题库查询浏览"
+        for tabindx in list(range(0, self.tabWidget.count())):
+            if self.tabWidget.tabText(tabindx) == curTabText:
+                self.tabWidget.setCurrentIndex(tabindx)
+                return
+
+        widget = QuestionDlg(db=self.db, curuser=self.curuser)
+        tabindx = self.tabWidget.addTab(widget,curTabText)
+        self.tabWidget.setCurrentWidget(widget)
+        widget.jumpNewQuestion.connect(self.questionModify)
+
+    @pyqtSlot()
     def questionModify(self):
         # if self.curuser != {}:
         #     if self.curuser["unitgroup"] != "市残联" and self.curuser["unitgroup"] != "区残联":
@@ -134,7 +146,7 @@ class MainWindow(QMainWindow):
         widget = QuesTypeDlg(db=self.db, curuser=self.curuser)
         tabindx = self.tabWidget.addTab(widget,curTabText)
         self.tabWidget.setCurrentWidget(widget)
-      
+
     def QuesCategoryManage(self):
         # if self.curuser != {}:
         #     if self.curuser["unitgroup"] != "市残联" :
@@ -150,7 +162,7 @@ class MainWindow(QMainWindow):
         widget = CategoryDlg(db=self.db, curuser=self.curuser)
         tabindx = self.tabWidget.addTab(widget,curTabText)
         self.tabWidget.setCurrentWidget(widget)
-        
+
     def quesWhichyearManage(self):
         # if self.curuser != {}:
         #     if self.curuser["unitgroup"] != "市残联" and self.curuser["unitgroup"] != "医院" :
@@ -167,22 +179,6 @@ class MainWindow(QMainWindow):
         tabindx = self.tabWidget.addTab(widget,curTabText)
         self.tabWidget.setCurrentWidget(widget)
 
-    def QuestionManage(self):
-        # if self.curuser != {}:
-        #     if self.curuser["unitgroup"] != "市残联" and self.curuser["unitgroup"] != "区残联":
-        #         QMessageBox.warning(self, "没有授权", "当前用户没有权限进行该操作！")
-        #         return
-
-        curTabText = "题库查询浏览"
-        for tabindx in list(range(0, self.tabWidget.count())):
-            if self.tabWidget.tabText(tabindx) == curTabText:
-                self.tabWidget.setCurrentIndex(tabindx)
-                return
-
-        widget2 = QuestionDlg(db=self.db, curuser=self.curuser)
-        tabindx = self.tabWidget.addTab(widget2,curTabText)
-        self.tabWidget.setCurrentWidget(widget2)
-
 
     def about(self):
         QMessageBox.about(self, "关于...",
@@ -190,7 +186,7 @@ class MainWindow(QMainWindow):
 
     def aboutQt(self):
         pass
-        
+
 
     def createAction(self, text, slot=None, shortcut=None, icon=None, tip=None, checkable=False, signal="triggered()"):
         action = QAction(text, self)
@@ -209,7 +205,7 @@ class MainWindow(QMainWindow):
 
     def createActions(self):
         self.userAct            = self.createAction("用户管理(&U)", self.userManage,   "", "", "用户管理")
-        self.modifyPwdAct       = self.createAction("修改密码", self.modifyPwd,   "", "", "修改用户密码")        
+        self.modifyPwdAct       = self.createAction("修改密码", self.modifyPwd,   "", "", "修改用户密码")
         self.exitAct        = self.createAction("退出(&X)", self.close,   "Ctrl+Q", "", "退出系统")
 
         self.questionAct        = self.createAction("题库(&M)", self.QuestionManage,   "", "", "所有题目列表")
@@ -218,21 +214,21 @@ class MainWindow(QMainWindow):
         self.quesCategoryAct    = self.createAction("题目分类(&C)", self.QuesCategoryManage,   "", "", "题目分类")
         self.quesTypeAct        = self.createAction("题型维护(&T)", self.quesTypeManage,   "", "", "题型维护")
         self.quesWhichyearAct   = self.createAction("试题年份(&W)", self.quesWhichyearManage,   "", "", "试题年份")
-        
+
         self.aboutAct       = self.createAction("关于(&A)", self.about,   "", "", "显示当前系统的基本信息")
         self.aboutQtAct     = self.createAction("关于Qt(&Q)", self.aboutQt,   "", "", "显示Qt库的基本信息")
         self.aboutQtAct.triggered.connect(qApp.aboutQt)
-        
+
     def createMenus(self):
         self.fileMenu = self.menuBar().addMenu("系统管理(&S)")
-        self.fileMenu.addAction(self.userAct)        
-        self.fileMenu.addAction(self.modifyPwdAct)        
+        self.fileMenu.addAction(self.userAct)
+        self.fileMenu.addAction(self.modifyPwdAct)
         self.fileMenu.addAction(self.exitAct)
 
         self.editMenu = self.menuBar().addMenu("题库导出(&F)")
         self.editMenu.addAction(self.questionAct)
         self.editMenu.addAction(self.quesmodifyAct)
-        
+
         self.approvalMenu = self.menuBar().addMenu("分类信息(&A)")
         self.approvalMenu.addAction(self.quesCategoryAct)
         self.approvalMenu.addAction(self.quesTypeAct)

@@ -19,3 +19,36 @@ def globaldb():
         QMessageBox.warning(None, "错误",  "数据库连接失败: %s" % db.lastError().text())
         sys.exit(1)
     return db
+
+
+class ComboBoxDelegate(QItemDelegate):
+    def __init__(self, parent, itemslist=["a", "b", "c"]):
+        QItemDelegate.__init__(self, parent)
+        self.itemslist = itemslist
+        self.parent = parent
+
+    def createEditor(self, parent, option, index):
+        self.editor = QComboBox(parent)
+        self.editor.addItems(self.itemslist)
+        self.editor.setCurrentIndex(0)
+        self.editor.installEventFilter(self)
+        return self.editor
+
+    def setEditorData(self, editor, index):
+        curtxt = index.data(Qt.DisplayRole)
+        # print(type(curtxt)== QPyNullVariant )
+        if type(curtxt) == type(1):
+            curindx = int(index.data(Qt.DisplayRole))
+            curtxt = self.itemslist[curindx]
+        elif type(curtxt)== QPyNullVariant:
+            curtxt = ""
+        pos = self.editor.findText(curtxt)
+        if pos == -1:
+            pos = 0
+        self.editor.setCurrentIndex(pos)
+
+
+    def setModelData(self,editor,model,index):
+        curindx = self.editor.currentIndex()
+        text = self.itemslist[curindx]
+        model.setData(index, text)

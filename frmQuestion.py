@@ -1,6 +1,9 @@
 from resources import *
 
 class QuestionDlg(QDialog):
+    # 自定义信号
+    jumpNewQuestion = pyqtSignal()
+
     def __init__(self, parent=None, db="", curuser=""):
         super(QuestionDlg,self).__init__(parent)
         # self.setStyleSheet("background-image:url('image/panelbg.jpg'); border: 2px; border-radius 2px;")
@@ -36,6 +39,8 @@ class QuestionDlg(QDialog):
             self.QuestionModel.setHeaderData(indx, Qt.Horizontal, iheader)
 
         self.QuestionView.setModel(self.QuestionModel)
+        self.updateList()
+
         # self.QuestionView.setColumnHidden(0, True)
         # self.QuestionView.show()
         self.QuestionView.verticalHeader().setFixedWidth(30)
@@ -74,6 +79,11 @@ class QuestionDlg(QDialog):
         lst_layout.addLayout(btn_layout)
 
         self.setLayout(lst_layout)
+
+    def updateList(self):
+        self.QuestionView.setItemDelegateForColumn(2, ComboBoxDelegate(self, self.selectComboxItems("select category  from categorytable")))
+        self.QuestionView.setItemDelegateForColumn(3, ComboBoxDelegate(self, self.selectComboxItems("select questiontype  from questypetable")))
+        self.QuestionView.setItemDelegateForColumn(4, ComboBoxDelegate(self, self.selectComboxItems("select whichyear  from yearstable")))
 
     def selectComboxItems(self, sqlstr):
         query = QSqlQuery(self.db)
@@ -140,7 +150,7 @@ class QuestionDlg(QDialog):
 
     #######======= QuestionModel ============###############
     def newQuestion(self):
-        pass
+        self.jumpNewQuestion.emit()
 
     def removeQuestion(self):
         index = self.QuestionView.currentIndex()
@@ -150,7 +160,7 @@ class QuestionDlg(QDialog):
             return
 
         if QMessageBox.question(self, "删除确认", "是否要删除当前选中题目？", "确定", "取消") == 0:
-            self.QuestionModel.removeRows(row, 1)
+            self.QuestionModel.removeRows(index.row(), 1)
             self.QuestionModel.submitAll()
             self.QuestionModel.database().commit()
 
