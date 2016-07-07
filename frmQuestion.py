@@ -40,6 +40,11 @@ class QuestionDlg(QDialog):
             self.QuestionModel.setHeaderData(indx, Qt.Horizontal, iheader)
 
         self.QuestionView.setModel(self.QuestionModel)
+        self.QuestionView.setColumnWidth(0, 500)
+        self.QuestionView.setColumnWidth(1, 500)
+        self.QuestionView.setColumnWidth(2, 100)
+        self.QuestionView.setColumnWidth(3, 100)
+        self.QuestionView.setColumnWidth(4, 100)
         self.updateList()
 
         # self.QuestionView.setColumnHidden(0, True)
@@ -163,6 +168,15 @@ class QuestionDlg(QDialog):
         questionstr = index.sibling(index.row(),0).data()
         answerstr   = index.sibling(index.row(),1).data()
 
+        query = QSqlQuery(self.db)
+        query.exec_("select answerhtml from questiontable where questionhtml like '" + questionstr + "''" )
+        while(query.next()):
+            curRowid = query.value(0)
+        print("select rowid,answerhtml from questiontable where questionhtml='" + questionstr + "'" , curRowid)
+        #//////////////////////////////////////////
+        #//////////////////////////////////////////
+        #//////////////////////////////////////////
+        #//////////////////////////////////////////
         self.jumpModifyQuestion.emit(questionstr, answerstr)
 
     def newQuestion(self):

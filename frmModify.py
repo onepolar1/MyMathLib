@@ -121,19 +121,24 @@ class QuesModifyDlg(QDialog):
 
         # btnFresh = QPushButton("预览")
         btnSave = QPushButton("保存")
-        btnClean = QPushButton("清空")
-        btnClose = QPushButton("关闭")
+        btnClean = QPushButton("全部清空")
+        # btnClose = QPushButton("关闭")
 
         # layout.addWidget(btnFresh)
         layout.addStretch(10)
         layout.addWidget(btnSave)
         layout.addWidget(btnClean)
-        layout.addWidget(btnClose)
+        # layout.addWidget(btnClose)
 
         # btnFresh.clicked.connect(self.refreshDisp)
         btnSave.clicked.connect(self.saveQuestion)
-        btnClose.clicked.connect(self.accept)
+        btnClean.clicked.connect(self.clearQuesAndAnsStr)
+        # btnClose.clicked.connect(self.accept)
         self.horizontalGroupBox.setLayout(layout)
+
+    def clearQuesAndAnsStr(self):
+        if QMessageBox.question(self, "清空确认", "是否要清空当前题目和答案？", "确定", "取消") == 0:
+            self.setQuestionAndAnswerstr("", "")
 
     def saveQuestion(self):
         quesCategory    = self.quesCategoryCombox.currentText()
@@ -173,6 +178,8 @@ class QuesModifyDlg(QDialog):
         self.quesEditorGroupBox = QGroupBox("题目信息填写")
         layout = QGridLayout()
 
+        lable1 = QLabel("请在下框中输入题目：")
+        lable2 = QLabel("请在下框中输入答案：")
         btnInsertImg = QPushButton("插入图片")
         btnInsertImg2 = QPushButton("插入图片")
 
@@ -186,13 +193,15 @@ class QuesModifyDlg(QDialog):
         btnInsertImg.clicked.connect(self.insertImg)
         btnInsertImg2.clicked.connect(self.insertImg2)
 
-        layout.addWidget(btnInsertImg, 0, 0, Qt.AlignLeft)
-        layout.addWidget(btnInsertImg2, 0, 1, Qt.AlignLeft)
-        layout.addWidget(self.questionEditor, 1, 0)
-        layout.addWidget(self.answerEditor, 1, 1)
+        layout.addWidget(lable1, 0, 0, Qt.AlignLeft)
+        layout.addWidget(btnInsertImg, 0, 1, Qt.AlignLeft)
+        layout.addWidget(lable2, 0, 2, Qt.AlignLeft)
+        layout.addWidget(btnInsertImg2, 0, 3, Qt.AlignLeft)
+        layout.addWidget(self.questionEditor, 1, 0, 1, 2)
+        layout.addWidget(self.answerEditor, 1, 2, 1, 2)
 
         layout.setColumnStretch(0, 10)
-        layout.setColumnStretch(1, 10)
+        layout.setColumnStretch(2, 10)
         self.quesEditorGroupBox.setLayout(layout)
 
 
