@@ -112,10 +112,10 @@ class MainWindow(QMainWindow):
         widget = QuestionDlg(db=self.db, curuser=self.curuser)
         tabindx = self.tabWidget.addTab(widget,curTabText)
         self.tabWidget.setCurrentWidget(widget)
-        widget.jumpNewQuestion.connect(self.questionModify)
+        widget.jumpModifyQuestion.connect(self.questionModify)
 
-    @pyqtSlot()
-    def questionModify(self):
+    @pyqtSlot(str, str)
+    def questionModify(self, questionstr="", answerstr=""):
         # if self.curuser != {}:
         #     if self.curuser["unitgroup"] != "市残联" and self.curuser["unitgroup"] != "区残联":
         #         QMessageBox.warning(self, "没有授权", "当前用户没有权限进行该操作！")
@@ -125,9 +125,10 @@ class MainWindow(QMainWindow):
         for tabindx in list(range(0, self.tabWidget.count())):
             if self.tabWidget.tabText(tabindx) == curTabText:
                 self.tabWidget.setCurrentIndex(tabindx)
+                self.tabWidget.currentWidget().setQuestionAndAnswerstr(questionstr, answerstr)
                 return
 
-        widget = QuesModifyDlg(db=self.db, curuser=self.curuser)
+        widget = QuesModifyDlg(db=self.db, curuser=self.curuser, questionstr=questionstr, answerstr=answerstr)
         tabindx = self.tabWidget.addTab(widget,curTabText)
         self.tabWidget.setCurrentWidget(widget)
 

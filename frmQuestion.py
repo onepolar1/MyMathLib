@@ -2,7 +2,8 @@ from resources import *
 
 class QuestionDlg(QDialog):
     # 自定义信号
-    jumpNewQuestion = pyqtSignal()
+    # jumpNewQuestion = pyqtSignal()
+    jumpModifyQuestion = pyqtSignal(str, str)
 
     def __init__(self, parent=None, db="", curuser=""):
         super(QuestionDlg,self).__init__(parent)
@@ -149,8 +150,24 @@ class QuestionDlg(QDialog):
             self.QuestionView.setEditTriggers(QAbstractItemView.DoubleClicked)
 
     #######======= QuestionModel ============###############
+
+    def modifyQuestion(self):
+        index = self.QuestionView.currentIndex()
+        if type(index.sibling(index.row(),0).data()) == type(None):
+            return
+        if type(index.sibling(index.row(),0).data()) == QPyNullVariant:
+            return
+        if index.sibling(index.row(),0).data().strip() == "":
+            return
+
+        questionstr = index.sibling(index.row(),0).data()
+        answerstr   = index.sibling(index.row(),1).data()
+
+        self.jumpModifyQuestion.emit(questionstr, answerstr)
+
     def newQuestion(self):
-        self.jumpNewQuestion.emit()
+        # self.jumpNewQuestion.emit()
+        self.jumpModifyQuestion.emit("", "")
 
     def removeQuestion(self):
         index = self.QuestionView.currentIndex()
@@ -167,9 +184,6 @@ class QuestionDlg(QDialog):
     def revertQuestion(self):
         self.QuestionModel.revertAll()
         self.QuestionModel.database().rollback()
-
-    def modifyQuestion(self):
-        pass
 
     def saveQuestion(self):
         self.QuestionModel.database().transaction()

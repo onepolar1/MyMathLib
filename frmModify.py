@@ -2,13 +2,16 @@
 from resources import *
 
 class QuesModifyDlg(QDialog):
-    def __init__(self, parent=None,  db="", curuser=""):
+    def __init__(self, parent=None,  db="", curuser="", questionstr="", answerstr=""):
         super(QuesModifyDlg, self).__init__()
 
         if db == "":
             self.db = globaldb()
         else:
             self.db = db
+
+        self.questionstr = questionstr
+        self.answerstr   = answerstr
 
         self.createQuestionDisp()
         self.createQuestionInfo()
@@ -162,6 +165,9 @@ class QuesModifyDlg(QDialog):
         tmpstr += '''<img src="images/trash.png" height="20" width="20" />'''
         self.answerEditor.setPlainText(tmpstr)
 
+    def setQuestionAndAnswerstr(self, questionstr, answerstr):
+        self.questionEditor.setPlainText(questionstr)
+        self.answerEditor.setPlainText(answerstr)
 
     def createQuestionEditor(self):
         self.quesEditorGroupBox = QGroupBox("题目信息填写")
@@ -171,11 +177,11 @@ class QuesModifyDlg(QDialog):
         btnInsertImg2 = QPushButton("插入图片")
 
         self.questionEditor = QTextEdit()
-        self.questionEditor.setPlainText("题目信息填写")
         self.questionEditor.textChanged.connect(self.refreshQuestionDisp)
+        self.questionEditor.setPlainText(self.questionstr)
         self.answerEditor = QTextEdit()
-        self.answerEditor.setPlainText("答案信息填写")
         self.answerEditor.textChanged.connect(self.refreshAnswerDisp)
+        self.answerEditor.setPlainText(self.answerstr)
 
         btnInsertImg.clicked.connect(self.insertImg)
         btnInsertImg2.clicked.connect(self.insertImg2)
