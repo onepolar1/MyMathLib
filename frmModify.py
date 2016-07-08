@@ -92,7 +92,7 @@ class QuesModifyDlg(QDialog):
         lstitems = self.selectComboxItems("select questiontype  from questypetable")
         self.quesTypeCombox.addItems(lstitems)
         # self.quesTypeCombox.insertItem(0, "")
-        self.quesTypeCombox.setCurrentIndex(0)
+        self.quesTypeCombox.setCurrentIndex(1)
         layout.addWidget(label2)
         layout.addWidget(self.quesTypeCombox)
 
@@ -158,7 +158,6 @@ class QuesModifyDlg(QDialog):
             return
 
         query = QSqlQuery(self.db)
-
         if self.curRowid != -1: #正在修改已有题目
             if QMessageBox.question(self, "确认", "是否要修改已有题目？", "确定", "取消") == 0:
                 updatestr = "update questiontable \
@@ -167,11 +166,12 @@ class QuesModifyDlg(QDialog):
                      + str(self.curRowid)+"'"
                 # print(updatestr)
                 query.exec_(updatestr)
+                QMessageBox.information(self, "提示", "题目更改成功!")
 
-        else: #插入新的题目
+        elif self.curRowid == -1: #插入新的题目
             if question.strip() == self.old_questionstr.strip():
                 QMessageBox.information(self, "提示", "当前题目已经存在，请无需增加同样题目!")
-            return
+                return
 
             query.prepare("insert into questiontable \
                 (questionhtml, answerhtml, category, questiontype, whichyear, demo) \
@@ -183,25 +183,43 @@ class QuesModifyDlg(QDialog):
             query.bindValue(":whichyear", quesWhichyear)
             query.bindValue(":demo", '')
             query.exec_()
+            QMessageBox.information(self, "提示", "新题目添加成功!")
 
     def insertImg(self):
         tmpstr = self.questionEditor.toPlainText()
-        tmpstr += '''<img src="images/trash.png" alt="Smiley face" width="42" height="42" align="right"> '''
+        tmpstr += '''<img src="images/请修改名称.png" alt="Smiley face" width="100" height="100" align="right"> '''
         self.questionEditor.setPlainText(tmpstr)
 
     def insertImg2(self):
         tmpstr = self.answerEditor.toPlainText()
-        tmpstr += '''<img src="images/trash.png" alt="Smiley face" width="42" height="42" align="right"> '''
+        tmpstr += '''<img src="images/请修改名称.png" alt="Smiley face" width="100" height="100" align="right"> '''
         self.answerEditor.setPlainText(tmpstr)
 
     def setQuestionAndAnswerstr(self, questionstr, answerstr):
         self.questionEditor.setPlainText(questionstr)
         self.answerEditor.setPlainText(answerstr)
         query = QSqlQuery(self.db)
-        query.exec_("select rowid from questiontable where questionhtml ='" + questionstr + "'")
+        query.exec_("select rowid, category, questiontype, whichyear from questiontable where questionhtml ='" + questionstr + "'")
+        category      = ""
+        questiontype  = ""
+        whichyear     = ""
         while(query.next()):
             self.curRowid = query.value(0)
+            category      = query.value(1)
+            questiontype  = query.value(2)
+            whichyear     = query.value(3)
 
+        pos1 = self.quesCategoryCombox.findText(category)
+        if pos1 != -1:
+            self.quesCategoryCombox.setCurrentIndex(pos1)
+        pos2 = self.quesTypeCombox.findText(questiontype)
+        if pos2 != -1:
+            self.quesTypeCombox.setCurrentIndex(pos2)
+        pos3 = self.quesWhichyearCombox.findText(whichyear)
+        if pos3 != -1:
+            self.quesWhichyearCombox.setCurrentIndex(pos3)
+        # print(pos, "------")
+        # print(self.curRowid, "setQuestionAndAnswerstr")
 
     def createQuestionEditor(self):
         self.quesEditorGroupBox = QGroupBox("题目信息填写")

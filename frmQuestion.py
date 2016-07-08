@@ -40,7 +40,7 @@ class QuestionDlg(QDialog):
             self.QuestionModel.setHeaderData(indx, Qt.Horizontal, iheader)
 
         self.QuestionView.setModel(self.QuestionModel)
-        self.QuestionView.setColumnWidth(0, 500)
+        self.QuestionView.setColumnWidth(0, 700)
         self.QuestionView.setColumnWidth(1, 500)
         self.QuestionView.setColumnWidth(2, 100)
         self.QuestionView.setColumnWidth(3, 100)
