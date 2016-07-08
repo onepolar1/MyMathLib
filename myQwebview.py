@@ -10,8 +10,8 @@ class myqwebview(QWebView):
 
         # self.resize(800, 600)
         myset = self.settings()
-        myset.setFontSize(QWebSettings.DefaultFontSize, 20)
-        myset.setFontSize(QWebSettings.MinimumFontSize, 20)
+        myset.setFontSize(QWebSettings.DefaultFontSize, 16)
+        myset.setFontSize(QWebSettings.MinimumFontSize, 16)
 
         self.htmlStr1 = """
             <html>
@@ -23,9 +23,10 @@ class myqwebview(QWebView):
             </script>
             <script type="text/javascript" async src="MathJax2.6/MathJax.js?config=TeX-MML-AM_HTMLorMML"></script>
             <style>
-                p { color: #000000; line-height:50%}
+                p { color: #00008B; font-weight: 900; font-family: verdana; line-height:100%}
                 strong {color: #222233}
-                body {background-color: #ddd}
+                body {background-color: #99caff}
+                <img align="right">
             </style>
             </head>
 

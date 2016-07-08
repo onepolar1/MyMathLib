@@ -10,13 +10,14 @@ class QuesModifyDlg(QDialog):
         else:
             self.db = db
 
-        self.questionstr = questionstr
-        self.answerstr   = answerstr
+        self.old_questionstr = questionstr
+        self.curRowid = -1
 
         self.createQuestionDisp()
         self.createQuestionInfo()
         self.createQuestionEditor()
         self.createButtons()
+        self.setQuestionAndAnswerstr(questionstr, answerstr)
 
         # mainLayout = QVBoxLayout()
         mainLayout = QGridLayout()
@@ -119,22 +120,27 @@ class QuesModifyDlg(QDialog):
         self.horizontalGroupBox = QGroupBox()
         layout = QHBoxLayout()
 
-        # btnFresh = QPushButton("预览")
+        btnNew = QPushButton("新增")
         btnSave = QPushButton("保存")
         btnClean = QPushButton("全部清空")
         # btnClose = QPushButton("关闭")
 
-        # layout.addWidget(btnFresh)
         layout.addStretch(10)
+        layout.addWidget(btnNew)
         layout.addWidget(btnSave)
         layout.addWidget(btnClean)
         # layout.addWidget(btnClose)
 
-        # btnFresh.clicked.connect(self.refreshDisp)
+        btnNew.clicked.connect(self.newQuestion)
         btnSave.clicked.connect(self.saveQuestion)
         btnClean.clicked.connect(self.clearQuesAndAnsStr)
         # btnClose.clicked.connect(self.accept)
         self.horizontalGroupBox.setLayout(layout)
+
+    def newQuestion(self):
+        self.curRowid = -1
+        self.questionEditor.setPlainText("")
+        self.answerEditor.setPlainText("")
 
     def clearQuesAndAnsStr(self):
         if QMessageBox.question(self, "清空确认", "是否要清空当前题目和答案？", "确定", "取消") == 0:
@@ -146,33 +152,56 @@ class QuesModifyDlg(QDialog):
         quesWhichyear   = self.quesWhichyearCombox.currentText()
         question        = self.questionEditor.toPlainText()
         answer          = self.answerEditor.toPlainText()
-        print(quesCategory, quesType, quesWhichyear, question, answer)
+        # print(quesCategory, quesType, quesWhichyear, question, answer)
+        if question.strip() == "":
+            QMessageBox.information(self, "提示", "当前题目为空，无法保存!")
+            return
 
         query = QSqlQuery(self.db)
-        query.prepare("insert into questiontable \
-            (questionhtml, answerhtml, category, questiontype, whichyear, demo) \
-            values (:questionhtml, :answerhtml, :category, :questiontype, :whichyear, :demo)")
-        query.bindValue(":questionhtml", question)
-        query.bindValue(":answerhtml", answer)
-        query.bindValue(":category", quesCategory)
-        query.bindValue(":questiontype", quesType)
-        query.bindValue(":whichyear", quesWhichyear)
-        query.bindValue(":demo", '')
-        query.exec_()
+
+        if self.curRowid != -1: #正在修改已有题目
+            if QMessageBox.question(self, "确认", "是否要修改已有题目？", "确定", "取消") == 0:
+                updatestr = "update questiontable \
+                    set questionhtml = '%s', answerhtml='%s', category='%s', questiontype='%s', whichyear='%s' \
+                    where rowid='" % (question, answer, quesCategory, quesType, quesWhichyear) \
+                     + str(self.curRowid)+"'"
+                # print(updatestr)
+                query.exec_(updatestr)
+
+        else: #插入新的题目
+            if question.strip() == self.old_questionstr.strip():
+                QMessageBox.information(self, "提示", "当前题目已经存在，请无需增加同样题目!")
+            return
+
+            query.prepare("insert into questiontable \
+                (questionhtml, answerhtml, category, questiontype, whichyear, demo) \
+                values (:questionhtml, :answerhtml, :category, :questiontype, :whichyear, :demo)")
+            query.bindValue(":questionhtml", question)
+            query.bindValue(":answerhtml", answer)
+            query.bindValue(":category", quesCategory)
+            query.bindValue(":questiontype", quesType)
+            query.bindValue(":whichyear", quesWhichyear)
+            query.bindValue(":demo", '')
+            query.exec_()
 
     def insertImg(self):
         tmpstr = self.questionEditor.toPlainText()
-        tmpstr += '''<img src="images/trash.png" height="20" width="20" />'''
+        tmpstr += '''<img src="images/trash.png" alt="Smiley face" width="42" height="42" align="right"> '''
         self.questionEditor.setPlainText(tmpstr)
 
     def insertImg2(self):
         tmpstr = self.answerEditor.toPlainText()
-        tmpstr += '''<img src="images/trash.png" height="20" width="20" />'''
+        tmpstr += '''<img src="images/trash.png" alt="Smiley face" width="42" height="42" align="right"> '''
         self.answerEditor.setPlainText(tmpstr)
 
     def setQuestionAndAnswerstr(self, questionstr, answerstr):
         self.questionEditor.setPlainText(questionstr)
         self.answerEditor.setPlainText(answerstr)
+        query = QSqlQuery(self.db)
+        query.exec_("select rowid from questiontable where questionhtml ='" + questionstr + "'")
+        while(query.next()):
+            self.curRowid = query.value(0)
+
 
     def createQuestionEditor(self):
         self.quesEditorGroupBox = QGroupBox("题目信息填写")
@@ -185,10 +214,10 @@ class QuesModifyDlg(QDialog):
 
         self.questionEditor = QTextEdit()
         self.questionEditor.textChanged.connect(self.refreshQuestionDisp)
-        self.questionEditor.setPlainText(self.questionstr)
+        # self.questionEditor.setPlainText(self.questionstr)
         self.answerEditor = QTextEdit()
         self.answerEditor.textChanged.connect(self.refreshAnswerDisp)
-        self.answerEditor.setPlainText(self.answerstr)
+        # self.answerEditor.setPlainText(self.answerstr)
 
         btnInsertImg.clicked.connect(self.insertImg)
         btnInsertImg2.clicked.connect(self.insertImg2)

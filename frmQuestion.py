@@ -107,46 +107,65 @@ class QuestionDlg(QDialog):
 
         layout.addStretch(10)
         label1 = QLabel("类别")
-        lineEdit1 = QComboBox()
+        self.quesCategoryCombox = QComboBox()
         lstitems = self.selectComboxItems("select category  from categorytable")
-        lineEdit1.addItems(lstitems)
-        # lineEdit1.insertItem(0, "")
-        lineEdit1.setCurrentIndex(0)
+        self.quesCategoryCombox.addItems(lstitems)
+        self.quesCategoryCombox.insertItem(0, "")
+        self.quesCategoryCombox.setCurrentIndex(0)
         layout.addWidget(label1)
-        layout.addWidget(lineEdit1)
+        layout.addWidget(self.quesCategoryCombox)
 
         layout.addStretch(10)
         label2 = QLabel("题型")
-        lineEdit2 = QComboBox()
+        self.quesTypeCombox = QComboBox()
         lstitems = self.selectComboxItems("select questiontype  from questypetable")
-        lineEdit2.addItems(lstitems)
-        # lineEdit2.insertItem(0, "")
-        lineEdit2.setCurrentIndex(0)
+        self.quesTypeCombox.addItems(lstitems)
+        self.quesTypeCombox.insertItem(0, "")
+        self.quesTypeCombox.setCurrentIndex(0)
         layout.addWidget(label2)
-        layout.addWidget(lineEdit2)
+        layout.addWidget(self.quesTypeCombox)
 
         layout.addStretch(10)
         label3 = QLabel("年份")
-        lineEdit3 = QComboBox()
+        self.quesWhichyearCombox = QComboBox()
         lstitems = self.selectComboxItems("select whichyear  from yearstable")
-        lineEdit3.addItems(lstitems)
-        # lineEdit3.insertItem(0, "")
-        lineEdit3.setCurrentIndex(0)
+        self.quesWhichyearCombox.addItems(lstitems)
+        self.quesWhichyearCombox.insertItem(0, "")
+        self.quesWhichyearCombox.setCurrentIndex(0)
         layout.addWidget(label3)
-        layout.addWidget(lineEdit3)
+        layout.addWidget(self.quesWhichyearCombox)
 
         layout.addStretch(10)
         label4 = QLabel("关键字")
-        lineEdit4 = QLineEdit()
+        self.selectText = QLineEdit()
         layout.addWidget(label4)
-        layout.addWidget(lineEdit4)
+        layout.addWidget(self.selectText)
 
         layout.addStretch(10)
-        btn = QPushButton("查询")
-        layout.addWidget(btn)
+        btnSelect = QPushButton("查询")
+        layout.addWidget(btnSelect)
         layout.addStretch(10)
 
+        btnSelect.clicked.connect(self.selectQuestion)
         self.quesInfoGroupBox.setLayout(layout)
+
+    def selectQuestion(self):
+        quesCategory    = self.quesCategoryCombox.currentText()
+        quesType        = self.quesTypeCombox.currentText()
+        quesWhichyear   = self.quesWhichyearCombox.currentText()
+        selectText      = self.selectText.text()
+        strwhere = "1=1"
+        if quesCategory != "":
+            strwhere += " and category like '%s'" % quesCategory
+        if quesType != "":
+            strwhere += " and questiontype like '%s'" % quesType
+        if quesWhichyear != "":
+            strwhere += " and whichyear like '%s'" % quesWhichyear
+        strwhere += " and questionhtml like '%" + selectText + "%'"
+
+        # print(strwhere)
+        self.QuestionModel.setFilter(strwhere)
+        self.QuestionModel.select()
 
     def dbclick(self, indx):
         if indx.column() == 0 or indx.column() == 1:
@@ -168,15 +187,6 @@ class QuestionDlg(QDialog):
         questionstr = index.sibling(index.row(),0).data()
         answerstr   = index.sibling(index.row(),1).data()
 
-        query = QSqlQuery(self.db)
-        query.exec_("select answerhtml from questiontable where questionhtml like '" + questionstr + "''" )
-        while(query.next()):
-            curRowid = query.value(0)
-        print("select rowid,answerhtml from questiontable where questionhtml='" + questionstr + "'" , curRowid)
-        #//////////////////////////////////////////
-        #//////////////////////////////////////////
-        #//////////////////////////////////////////
-        #//////////////////////////////////////////
         self.jumpModifyQuestion.emit(questionstr, answerstr)
 
     def newQuestion(self):
