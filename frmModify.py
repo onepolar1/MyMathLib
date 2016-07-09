@@ -191,9 +191,21 @@ class QuesModifyDlg(QDialog):
         self.questionEditor.setPlainText(tmpstr)
 
     def insertImg2(self):
-        tmpstr = self.answerEditor.toPlainText()
-        tmpstr += '''<img src="images/请修改名称.png" alt="Smiley face" width="100" height="100" align="right"> '''
-        self.answerEditor.setPlainText(tmpstr)
+        import shutil
+        filedialog = QFileDialog()
+        curdir = QDir.currentPath()
+        newImgPath = curdir + QDir.separator() + "images"
+        fileName = filedialog.getOpenFileName(self,  "打开图象", curdir, "Image Files (*.png *.jpg *.bmp *.gif)")
+        if fileName != "":
+        # print(type(fileName), fileName=="")
+            newImgName = strftime("%Y-%m-%d-%H-%M-%S", gmtime()) + fileName[-4:]
+            newImgAllPath = newImgPath + QDir.separator() + newImgName
+            shutil.copyfile(fileName, newImgAllPath) ##复制文件
+
+
+            tmpstr = self.answerEditor.toPlainText()
+            tmpstr += '''<img src="images/''' + newImgName + '''" alt="Smiley face" width="100" height="100" align="right"> '''
+            self.answerEditor.setPlainText(tmpstr)
 
     def setQuestionAndAnswerstr(self, questionstr, answerstr):
         self.questionEditor.setPlainText(questionstr)

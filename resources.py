@@ -4,6 +4,7 @@ from PyQt4.QtSql import *
 from PyQt4.QtWebKit import *
 from myQwebview import myqwebview
 import markdown
+from time import gmtime, strftime
 try: import mdx_mathjax
 except: pass
 
