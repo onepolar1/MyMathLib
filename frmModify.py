@@ -10,6 +10,7 @@ class QuesModifyDlg(QDialog):
         else:
             self.db = db
 
+        self.curdir = QDir.currentPath()
         self.old_questionstr = questionstr
         self.curRowid = -1
 
@@ -186,22 +187,28 @@ class QuesModifyDlg(QDialog):
             QMessageBox.information(self, "提示", "新题目添加成功!")
 
     def insertImg(self):
-        tmpstr = self.questionEditor.toPlainText()
-        tmpstr += '''<img src="images/请修改名称.png" alt="Smiley face" width="100" height="100" align="right"> '''
-        self.questionEditor.setPlainText(tmpstr)
-
-    def insertImg2(self):
-        import shutil
         filedialog = QFileDialog()
-        curdir = QDir.currentPath()
-        newImgPath = curdir + QDir.separator() + "images"
-        fileName = filedialog.getOpenFileName(self,  "打开图象", curdir, "Image Files (*.png *.jpg *.bmp *.gif)")
+        newImgPath = self.curdir + QDir.separator() + "images"
+        fileName = filedialog.getOpenFileName(self,  "打开图象", self.curdir, "Image Files (*.png *.jpg *.bmp *.gif)")
         if fileName != "":
         # print(type(fileName), fileName=="")
             newImgName = strftime("%Y-%m-%d-%H-%M-%S", gmtime()) + fileName[-4:]
             newImgAllPath = newImgPath + QDir.separator() + newImgName
             shutil.copyfile(fileName, newImgAllPath) ##复制文件
 
+            tmpstr = self.answerEditor.toPlainText()
+            tmpstr += '''<img src="images/''' + newImgName + '''" alt="Smiley face" width="100" height="100" align="right"> '''
+            self.questionEditor.setPlainText(tmpstr)
+
+    def insertImg2(self):
+        filedialog = QFileDialog()
+        newImgPath = self.curdir + QDir.separator() + "images"
+        fileName = filedialog.getOpenFileName(self,  "打开图象", self.curdir, "Image Files (*.png *.jpg *.bmp *.gif)")
+        if fileName != "":
+        # print(type(fileName), fileName=="")
+            newImgName = strftime("%Y-%m-%d-%H-%M-%S", gmtime()) + fileName[-4:]
+            newImgAllPath = newImgPath + QDir.separator() + newImgName
+            shutil.copyfile(fileName, newImgAllPath) ##复制文件
 
             tmpstr = self.answerEditor.toPlainText()
             tmpstr += '''<img src="images/''' + newImgName + '''" alt="Smiley face" width="100" height="100" align="right"> '''
@@ -233,6 +240,28 @@ class QuesModifyDlg(QDialog):
         # print(pos, "------")
         # print(self.curRowid, "setQuestionAndAnswerstr")
 
+    def pictureDropped(self, l):
+        for filename in l:
+            if os.path.exists(filename):
+                newImgName = strftime("%Y-%m-%d-%H-%M-%S", gmtime()) + filename[-4:]
+                newImgAllPath = self.curdir + QDir.separator() + "images" + QDir.separator() + newImgName
+                shutil.copyfile(filename, newImgAllPath) ##复制文件
+
+                tmpstr = self.questionEditor.toPlainText()
+                tmpstr += '''<img src="images/''' + newImgName + '''" alt="Smiley face" width="100" height="100" align="right"> '''
+                self.questionEditor.setPlainText(tmpstr)
+
+    def pictureDropped2(self, l):
+        for filename in l:
+            if os.path.exists(filename):
+                newImgName = strftime("%Y-%m-%d-%H-%M-%S", gmtime()) + filename[-4:]
+                newImgAllPath = self.curdir + QDir.separator() + "images" + QDir.separator() + newImgName
+                shutil.copyfile(filename, newImgAllPath) ##复制文件
+
+                tmpstr = self.answerEditor.toPlainText()
+                tmpstr += '''<img src="images/''' + newImgName + '''" alt="Smiley face" width="100" height="100" align="right"> '''
+                self.answerEditor.setPlainText(tmpstr)
+
     def createQuestionEditor(self):
         self.quesEditorGroupBox = QGroupBox("题目信息填写")
         layout = QGridLayout()
@@ -242,12 +271,15 @@ class QuesModifyDlg(QDialog):
         btnInsertImg = QPushButton("插入图片")
         btnInsertImg2 = QPushButton("插入图片")
 
-        self.questionEditor = QTextEdit()
+        self.questionEditor = DragImgTextEdit(self)
+        self.connect(self.questionEditor, SIGNAL("dropped"), self.pictureDropped)
+        # self.questionEditor = QTextEdit()
         self.questionEditor.textChanged.connect(self.refreshQuestionDisp)
-        # self.questionEditor.setPlainText(self.questionstr)
-        self.answerEditor = QTextEdit()
+
+        self.answerEditor = DragImgTextEdit(self)
+        self.connect(self.answerEditor, SIGNAL("dropped"), self.pictureDropped2)
         self.answerEditor.textChanged.connect(self.refreshAnswerDisp)
-        # self.answerEditor.setPlainText(self.answerstr)
+
 
         btnInsertImg.clicked.connect(self.insertImg)
         btnInsertImg2.clicked.connect(self.insertImg2)

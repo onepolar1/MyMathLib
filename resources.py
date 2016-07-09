@@ -3,7 +3,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtSql import *
 from PyQt4.QtWebKit import *
 from myQwebview import myqwebview
-import markdown
+import markdown, os, shutil
 from time import gmtime, strftime
 try: import mdx_mathjax
 except: pass
@@ -53,3 +53,33 @@ class ComboBoxDelegate(QItemDelegate):
         curindx = self.editor.currentIndex()
         text = self.itemslist[curindx]
         model.setData(index, text)
+
+class DragImgTextEdit(QTextEdit):
+    def __init__(self, type, parent=None):
+        super(DragImgTextEdit, self).__init__(parent)
+        self.setAcceptDrops(True)
+        # self.setIconSize(QtCore.QSize(72, 72))
+
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasUrls:
+            event.accept()
+        else:
+            event.ignore()
+
+    def dragMoveEvent(self, event):
+        if event.mimeData().hasUrls:
+            event.setDropAction(Qt.CopyAction)
+            event.accept()
+        else:
+            event.ignore()
+
+    def dropEvent(self, event):
+        if event.mimeData().hasUrls:
+            event.setDropAction(Qt.CopyAction)
+            event.accept()
+            links = []
+            for url in event.mimeData().urls():
+                links.append(str(url.toLocalFile()))
+            self.emit(SIGNAL("dropped"), links)
+        else:
+            event.ignore()
