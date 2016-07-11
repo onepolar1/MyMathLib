@@ -186,32 +186,30 @@ class QuesModifyDlg(QDialog):
             query.exec_()
             QMessageBox.information(self, "提示", "新题目添加成功!")
 
-    def insertImg(self):
+    def InserImagesDialog(self):
         filedialog = QFileDialog()
         newImgPath = self.curdir + QDir.separator() + "images"
         fileName = filedialog.getOpenFileName(self,  "打开图象", self.curdir, "Image Files (*.png *.jpg *.bmp *.gif)")
         if fileName != "":
         # print(type(fileName), fileName=="")
-            newImgName = strftime("%Y-%m-%d-%H-%M-%S", gmtime()) + fileName[-4:]
+            filename1, file_extensions = os.path.splitext(fileName)
+            newImgName = strftime("%Y-%m-%d-%H-%M-%S", gmtime()) + file_extensions
             newImgAllPath = newImgPath + QDir.separator() + newImgName
             shutil.copyfile(fileName, newImgAllPath) ##复制文件
-
-            tmpstr = self.answerEditor.toPlainText()
-            tmpstr += '''<img src="images/''' + newImgName + '''" alt="Smiley face" width="100" height="100" align="right"> '''
+            return '''<img src="images/''' + newImgName + '''" alt="Smiley face" width="100" height="100" align="right"> '''
+        else:
+            return ""
+           
+    def insertImg(self):
+        imghtml = self.InserImagesDialog()
+        if imghtml != "":        
+            tmpstr = self.questionEditor.toPlainText() + imghtml
             self.questionEditor.setPlainText(tmpstr)
 
     def insertImg2(self):
-        filedialog = QFileDialog()
-        newImgPath = self.curdir + QDir.separator() + "images"
-        fileName = filedialog.getOpenFileName(self,  "打开图象", self.curdir, "Image Files (*.png *.jpg *.bmp *.gif)")
-        if fileName != "":
-        # print(type(fileName), fileName=="")
-            newImgName = strftime("%Y-%m-%d-%H-%M-%S", gmtime()) + fileName[-4:]
-            newImgAllPath = newImgPath + QDir.separator() + newImgName
-            shutil.copyfile(fileName, newImgAllPath) ##复制文件
-
-            tmpstr = self.answerEditor.toPlainText()
-            tmpstr += '''<img src="images/''' + newImgName + '''" alt="Smiley face" width="100" height="100" align="right"> '''
+        imghtml = self.InserImagesDialog()
+        if imghtml != "":       
+            tmpstr = self.answerEditor.toPlainText() + imghtml
             self.answerEditor.setPlainText(tmpstr)
 
     def setQuestionAndAnswerstr(self, questionstr, answerstr):
@@ -243,7 +241,8 @@ class QuesModifyDlg(QDialog):
     def pictureDropped(self, l):
         for filename in l:
             if os.path.exists(filename):
-                newImgName = strftime("%Y-%m-%d-%H-%M-%S", gmtime()) + filename[-4:]
+                filename1, file_extensions = os.path.splitext(filename)
+                newImgName = strftime("%Y-%m-%d-%H-%M-%S", gmtime()) + file_extensions
                 newImgAllPath = self.curdir + QDir.separator() + "images" + QDir.separator() + newImgName
                 shutil.copyfile(filename, newImgAllPath) ##复制文件
 
@@ -254,7 +253,8 @@ class QuesModifyDlg(QDialog):
     def pictureDropped2(self, l):
         for filename in l:
             if os.path.exists(filename):
-                newImgName = strftime("%Y-%m-%d-%H-%M-%S", gmtime()) + filename[-4:]
+                filename1, file_extensions = os.path.splitext(filename)
+                newImgName = strftime("%Y-%m-%d-%H-%M-%S", gmtime()) + file_extensions
                 newImgAllPath = self.curdir + QDir.separator() + "images" + QDir.separator() + newImgName
                 shutil.copyfile(filename, newImgAllPath) ##复制文件
 

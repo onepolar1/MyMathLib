@@ -40,8 +40,8 @@ class QuestionDlg(QDialog):
             self.QuestionModel.setHeaderData(indx, Qt.Horizontal, iheader)
 
         self.QuestionView.setModel(self.QuestionModel)
-        self.QuestionView.setColumnWidth(0, 700)
-        self.QuestionView.setColumnWidth(1, 500)
+        self.QuestionView.setColumnWidth(0, 600)
+        self.QuestionView.setColumnWidth(1, 400)
         self.QuestionView.setColumnWidth(2, 100)
         self.QuestionView.setColumnWidth(3, 100)
         self.QuestionView.setColumnWidth(4, 100)
@@ -170,6 +170,7 @@ class QuestionDlg(QDialog):
     def dbclick(self, indx):
         if indx.column() == 0 or indx.column() == 1:
             self.QuestionView.setEditTriggers(QAbstractItemView.NoEditTriggers)
+            self.modifyQuestion()
         else:
             self.QuestionView.setEditTriggers(QAbstractItemView.DoubleClicked)
 
@@ -190,8 +191,24 @@ class QuestionDlg(QDialog):
         self.jumpModifyQuestion.emit(questionstr, answerstr)
 
     def newQuestion(self):
-        # self.jumpNewQuestion.emit()
         self.jumpModifyQuestion.emit("", "")
+        Items = self.QuestionModel.match(self.QuestionModel.index(0,0),
+            Qt.DisplayRole,
+            "ssd",
+            -1,
+            Qt.MatchRecursive)
+
+        for i1 in Items:
+            print(i1.sibling(0,0).data())
+            print(i1.sibling(1,0).data())
+            print(i1.sibling(2,0).data())
+        # print(Items[0].sibling(0,1).data())
+        # Items = model->match(
+        #     model->index(0, 0),
+        #     Qt::DisplayRole,
+        #     QVariant::fromValue(item),
+        #     2, // look *
+        #     Qt::MatchRecursive);
 
     def removeQuestion(self):
         index = self.QuestionView.currentIndex()
