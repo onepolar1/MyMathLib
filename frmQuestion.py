@@ -80,6 +80,7 @@ class QuestionDlg(QDialog):
         removebtn.clicked.connect(self.removeQuestion)
 
         self.QuestionView.doubleClicked.connect(self.dbclick)
+        self.QuestionView.clicked.connect(self.viewclick)
 
         lst_layout = QVBoxLayout()
         lst_layout.addWidget(self.quesInfoGroupBox)
@@ -93,9 +94,12 @@ class QuestionDlg(QDialog):
 
         self.setLayout(lst_layout)
 
+    def viewclick(self):
+        print("viewclick")
+
     def createQuestionDisp(self):
         self.quesDispGroupBox = QGroupBox("题目预览")
-        layout = QGridLayout()
+        layout = QHBoxLayout()
 
         self.questionDisp = myqwebview()
         self.questionDisp.setFixedHeight(100)
@@ -104,13 +108,13 @@ class QuestionDlg(QDialog):
         self.answerDisp.setFixedHeight(100)
         self.answerDisp.setHtmlString("")
 
-        layout.addWidget(self.questionDisp, 0, 0)
-        layout.addWidget(self.answerDisp, 0, 1)
+        layout.addWidget(self.questionDisp)
+        layout.addWidget(self.answerDisp)
 
         # layout.setColumnStretch(0, 10)
         # layout.setColumnStretch(1, 10)
-        layout.setRowMinimumHeight(0, 40)
-        layout.setRowMinimumHeight(1, 40)
+        # layout.setRowMinimumHeight(0, 40)
+        # layout.setRowMinimumHeight(1, 40)
         self.quesDispGroupBox.setLayout(layout)
 
     def updateList(self):
@@ -224,7 +228,7 @@ class QuestionDlg(QDialog):
         # print(index.sibling(1,0).data())
 
         self.jumpModifyQuestion.emit("", "")
-        
+
         # Items = self.QuestionModel.match(self.QuestionModel.index(2,1),
         #     Qt.DisplayRole,
         #     "ssd",
