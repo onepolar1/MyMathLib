@@ -57,6 +57,8 @@ class QuestionDlg(QDialog):
         self.QuestionView.setStyleSheet("font-size:16px; ");
         self.QuestionView.setSelectionMode(QAbstractItemView.SingleSelection)
 
+        self.createQuestionDisp()
+
         btn_layout = QHBoxLayout()
         newusrbtn       = QPushButton("新增")
         modifybtn       = QPushButton("修改")
@@ -82,9 +84,34 @@ class QuestionDlg(QDialog):
         lst_layout = QVBoxLayout()
         lst_layout.addWidget(self.quesInfoGroupBox)
         lst_layout.addWidget(self.QuestionView)
+        lst_layout.addWidget(self.quesDispGroupBox)
         lst_layout.addLayout(btn_layout)
+        # lst_layout.setStretch(0, 1)
+        lst_layout.setStretch(1, 10)
+        lst_layout.setStretch(2, 1)
+        # lst_layout.setStretch(3, 1)
 
         self.setLayout(lst_layout)
+
+    def createQuestionDisp(self):
+        self.quesDispGroupBox = QGroupBox("题目预览")
+        layout = QGridLayout()
+
+        self.questionDisp = myqwebview()
+        self.questionDisp.setFixedHeight(100)
+        self.questionDisp.setHtmlString("")
+        self.answerDisp = myqwebview()
+        self.answerDisp.setFixedHeight(100)
+        self.answerDisp.setHtmlString("")
+
+        layout.addWidget(self.questionDisp, 0, 0)
+        layout.addWidget(self.answerDisp, 0, 1)
+
+        # layout.setColumnStretch(0, 10)
+        # layout.setColumnStretch(1, 10)
+        layout.setRowMinimumHeight(0, 40)
+        layout.setRowMinimumHeight(1, 40)
+        self.quesDispGroupBox.setLayout(layout)
 
     def updateList(self):
         self.QuestionView.setItemDelegateForColumn(2, ComboBoxDelegate(self, self.selectComboxItems("select category  from categorytable")))

@@ -82,8 +82,8 @@ class QuesModifyDlg(QDialog):
         self.quesCategoryCombox = QComboBox()
         lstitems = self.selectComboxItems("select category  from categorytable")
         self.quesCategoryCombox.addItems(lstitems)
-        # self.quesCategoryCombox.insertItem(0, "")
-        self.quesCategoryCombox.setCurrentIndex(0)
+        self.quesCategoryCombox.insertItem(0, "")
+        self.quesCategoryCombox.setCurrentIndex(1)
         layout.addWidget(label1)
         layout.addWidget(self.quesCategoryCombox)
 
@@ -92,8 +92,8 @@ class QuesModifyDlg(QDialog):
         self.quesTypeCombox = QComboBox()
         lstitems = self.selectComboxItems("select questiontype  from questypetable")
         self.quesTypeCombox.addItems(lstitems)
-        # self.quesTypeCombox.insertItem(0, "")
-        self.quesTypeCombox.setCurrentIndex(1)
+        self.quesTypeCombox.insertItem(0, "")
+        self.quesTypeCombox.setCurrentIndex(2)
         layout.addWidget(label2)
         layout.addWidget(self.quesTypeCombox)
 
@@ -102,8 +102,8 @@ class QuesModifyDlg(QDialog):
         self.quesWhichyearCombox = QComboBox()
         lstitems = self.selectComboxItems("select whichyear  from yearstable")
         self.quesWhichyearCombox.addItems(lstitems)
-        # self.quesWhichyearCombox.insertItem(0, "")
-        self.quesWhichyearCombox.setCurrentIndex(0)
+        self.quesWhichyearCombox.insertItem(0, "")
+        self.quesWhichyearCombox.setCurrentIndex(1)
         layout.addWidget(label3)
         layout.addWidget(self.quesWhichyearCombox)
 

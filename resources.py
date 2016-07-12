@@ -3,7 +3,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtSql import *
 from PyQt4.QtWebKit import *
 from myQwebview import myqwebview
-import markdown, os, shutil
+import markdown, os, shutil, xlrd
 from time import gmtime, strftime
 try: import mdx_mathjax
 except: pass

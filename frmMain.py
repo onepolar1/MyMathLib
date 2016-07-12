@@ -188,7 +188,43 @@ class MainWindow(QMainWindow):
     def aboutQt(self):
         pass
 
+    def QuestionImport(self):
+        filedialog = QFileDialog()
+        fileName = filedialog.getOpenFileName(self,  "打开excel题目文件", QDir.homePath (), "excel文件 (*.xls *.xlsx)")
+        if fileName != "":            
+            book = xlrd.open_workbook(fileName)
+            sh = book.sheet_by_index(0)
+            
+            lsthead = ["序号","题目","答案","分类","题目类型","年份","备注"]
+            for indx, ihead in enumerate(lsthead):
+                if sh.row(0)[indx].value != ihead:
+                    QMessageBox.warning(self, "提示", "请将所导入的excel文件第一行标题按照\n\n" + "-".join(lsthead) + "\n\n的方式排列!")
+                    return
 
+            query = QSqlQuery(self.db)
+            for indx in range(1, sh.nrows):
+                questionstr         = sh.row(indx)[1].value
+                answerstr           = sh.row(indx)[2].value
+                quescategorystr     = sh.row(indx)[3].value
+                questypestr         = sh.row(indx)[4].value
+                queswhichyearstr    = sh.row(indx)[5].value
+                quesdemostr         = sh.row(indx)[6].value
+
+                query.prepare("insert into questiontable \
+                    (questionhtml, answerhtml, category, questiontype, whichyear, demo) \
+                    values (:questionhtml, :answerhtml, :category, :questiontype, :whichyear, :demo)")
+                query.bindValue(":questionhtml", questionstr)
+                query.bindValue(":answerhtml", answerstr)
+                query.bindValue(":category", quescategorystr)
+                query.bindValue(":questiontype", questypestr)
+                query.bindValue(":whichyear", queswhichyearstr)
+                query.bindValue(":demo", quesdemostr)
+                query.exec_()
+
+            QMessageBox.information(self, "提示", "导入成功!")
+                
+                # print([questionstr,answerstr,quescategorystr,questypestr,queswhichyearstr,quesdemostr])
+                
     def createAction(self, text, slot=None, shortcut=None, icon=None, tip=None, checkable=False, signal="triggered()"):
         action = QAction(text, self)
         if icon is not None:
@@ -211,6 +247,7 @@ class MainWindow(QMainWindow):
 
         self.questionAct        = self.createAction("题库(&M)", self.QuestionManage,   "", "", "所有题目列表")
         self.quesmodifyAct      = self.createAction("添加题目(&A)", self.questionModify,   "", "", "新增加题目")
+        self.quesImportAct      = self.createAction("导入...(&I)", self.QuestionImport,   "", "", "从excel表格导入题目")
 
         self.quesCategoryAct    = self.createAction("题目分类(&C)", self.QuesCategoryManage,   "", "", "题目分类")
         self.quesTypeAct        = self.createAction("题型维护(&T)", self.quesTypeManage,   "", "", "题型维护")
@@ -226,9 +263,10 @@ class MainWindow(QMainWindow):
         self.fileMenu.addAction(self.modifyPwdAct)
         self.fileMenu.addAction(self.exitAct)
 
-        self.editMenu = self.menuBar().addMenu("题库导出(&F)")
+        self.editMenu = self.menuBar().addMenu("题库总览(&F)")
         self.editMenu.addAction(self.questionAct)
         self.editMenu.addAction(self.quesmodifyAct)
+        self.editMenu.addAction(self.quesImportAct)
 
         self.approvalMenu = self.menuBar().addMenu("分类信息(&A)")
         self.approvalMenu.addAction(self.quesCategoryAct)
