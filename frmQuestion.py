@@ -191,17 +191,23 @@ class QuestionDlg(QDialog):
         self.jumpModifyQuestion.emit(questionstr, answerstr)
 
     def newQuestion(self):
-        self.jumpModifyQuestion.emit("", "")
-        Items = self.QuestionModel.match(self.QuestionModel.index(0,0),
-            Qt.DisplayRole,
-            "ssd",
-            -1,
-            Qt.MatchRecursive)
+        # index = self.QuestionView.currentIndex()
+        # print(self.QuestionView.record())
+        # print(index.data())
+        # print(index.sibling(1,0).data())
 
-        for i1 in Items:
-            print(i1.sibling(0,0).data())
-            print(i1.sibling(1,0).data())
-            print(i1.sibling(2,0).data())
+        self.jumpModifyQuestion.emit("", "")
+        
+        # Items = self.QuestionModel.match(self.QuestionModel.index(2,1),
+        #     Qt.DisplayRole,
+        #     "ssd",
+        #     -1,
+        #     Qt.MatchStartsWith )
+
+        # for i1 in Items:
+        #     print(i1.sibling(0,0).data())
+        #     print(i1.sibling(1,0).data())
+            # print(i1.sibling(2,0).data())
         # print(Items[0].sibling(0,1).data())
         # Items = model->match(
         #     model->index(0, 0),
