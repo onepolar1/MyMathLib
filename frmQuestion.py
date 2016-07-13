@@ -81,6 +81,11 @@ class QuestionDlg(QDialog):
 
         self.QuestionView.doubleClicked.connect(self.dbclick)
         self.QuestionView.clicked.connect(self.viewclick)
+        self.QuestionView.selectionModel().currentChanged.connect(self.viewDataCursorChanged)
+        # self.connect(self.QuestionView.selectionModel(), \
+        #     SIGNAL("currentChanged(QModelIndex, QModelIndex)"), \
+        #     SLOT(self.viewDataCursorChanged(QModelIndex, QModelIndex)))
+        # self.QuestionView.currentChanged.connect(self.viewDataCursorChanged)
 
         lst_layout = QVBoxLayout()
         lst_layout.addWidget(self.quesInfoGroupBox)
@@ -94,8 +99,21 @@ class QuestionDlg(QDialog):
 
         self.setLayout(lst_layout)
 
-    def viewclick(self):
-        print("viewclick")
+    def viewDataCursorChanged(self, curindx, preindx):
+        questionhtml = curindx.sibling(curindx.row(),0).data()
+        answerhtml = curindx.sibling(curindx.row(),1).data()
+        self.questionDisp.setHtmlString(questionhtml)
+        self.answerDisp.setHtmlString(answerhtml)
+        
+
+    def viewclick(self, indx):
+        # print(indx.data())
+        questionhtml = indx.sibling(indx.row(),0).data()
+        answerhtml   = indx.sibling(indx.row(),1).data()
+        self.questionDisp.setHtmlString(questionhtml)
+        self.answerDisp.setHtmlString(answerhtml)
+
+        # print("viewclick")
 
     def createQuestionDisp(self):
         self.quesDispGroupBox = QGroupBox("题目预览")

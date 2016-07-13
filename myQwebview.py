@@ -47,7 +47,7 @@ class myqwebview(QWebView):
             mathematics.</p>
             """
 
-        self.setHtmlString(tmpstr)
+        # self.setHtmlString(tmpstr)
         self.setZoomFactor(1)
         # self.setHtml(self.htmlStr, baseUrl)
 
