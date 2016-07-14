@@ -50,7 +50,29 @@ class htmlViewer(QWebView):
             <img src="images/trash.png" alt="Smiley face" width="100" height="100" align="right">
             """
 
-        self.setHtml(self.htmlStr1 + tmpstr + self.htmlStr2, self.baseUrl)
+        svgExStr = '''
+        <!DOCTYPE html>
+<html>
+<head>
+<title>MathJax in SVG diagram</title>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_SVG"></script>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="1000" height="500">
+  <circle cx="100" cy="100" r="99" fill="yellow" stroke="red" />
+  <circle cx="100" cy="100" r="3" fill="blue" />
+  <foreignObject x="100" y="100" width="100" height="100">
+    <div xmlns="http://www.w3.org/1999/xhtml" style="font-family:Times; font-size:15px">
+    \(\displaystyle{x+1\over y-1}\)
+    </div>
+  </foreignObject>
+</svg>
+</body>
+</html>
+        '''
+
+        # self.setHtml(self.htmlStr1 + tmpstr + self.htmlStr2, self.baseUrl)
+        self.setHtml(svgExStr)
         self.setZoomFactor(1)
 
 
