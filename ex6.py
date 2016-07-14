@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 
-import sys
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.QtWebKit import *
+import os
+import platform
 
-app = QApplication(sys.argv)
-
+userhome = os.path.expanduser('~')
+desktop = userhome + os.path.sep +  'Desktop' + os.path.sep
 
 class htmlViewer(QWebView):
     def __init__(self,url, parent=None):
@@ -60,7 +61,11 @@ class htmlViewer(QWebView):
         self.printer.setPaperSize(QPrinter.A4)
         self.printer.setFullPage(True)
         #self.printer.setResolution(72)
-        self.printer.setOutputFileName(r"C:\Users\Administrator.USER-20140413XA\Desktop\printYou.pdf")
+        filename = desktop + r"printYou.pdf"
+        print(filename)
+
+    def genPdf(self):
+        self.printer.setOutputFileName("printYou.pdf")
         # self.loadFinished.connect(self.execpreview)
 
     def genUrl(self):
@@ -86,7 +91,31 @@ class htmlViewer(QWebView):
     def execpreview(self,arg):
         self.print_(self.printer)
 
-a = htmlViewer("")
-a.show()
 
-sys.exit(app.exec_())
+class QuestionDlg(QDialog):
+    def __init__(self, parent=None, db="", curuser=""):
+        super(QuestionDlg,self).__init__(parent)
+
+        self.resize(800, 600)
+        
+        titleLayout = QHBoxLayout()
+        self.questionDisp = htmlViewer("")
+        btn = QPushButton("打印")
+        titleLayout.addWidget(self.questionDisp)
+        titleLayout.addWidget(btn)
+        btn.clicked.connect(self.printview)
+
+        self.setLayout(titleLayout)
+
+    def printview(self):
+        self.questionDisp.genPdf()
+        print("hello")
+
+
+
+if __name__ == "__main__":
+    import sys
+    app=QApplication(sys.argv)
+    dialog=QuestionDlg()
+    dialog.show()
+    app.exec_()
