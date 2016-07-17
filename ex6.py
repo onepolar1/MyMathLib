@@ -71,8 +71,8 @@ class htmlViewer(QWebView):
 </html>
         '''
 
-        # self.setHtml(self.htmlStr1 + tmpstr + self.htmlStr2, self.baseUrl)
-        self.setHtml(svgExStr)
+        self.setHtml(self.htmlStr1 + tmpstr + self.htmlStr2, self.baseUrl)
+        # self.setHtml(svgExStr)
         self.setZoomFactor(1)
 
 
@@ -85,6 +85,7 @@ class htmlViewer(QWebView):
         #self.printer.setResolution(72)
         filename = desktop + r"printYou.pdf"
         print(filename)
+        self.printer.setOutputFileName("printYou.pdf")
 
     def genPdf(self):
         self.printer.setOutputFileName("printYou.pdf")
@@ -119,7 +120,7 @@ class QuestionDlg(QDialog):
         super(QuestionDlg,self).__init__(parent)
 
         self.resize(800, 600)
-        
+
         titleLayout = QHBoxLayout()
         self.questionDisp = htmlViewer("")
         btn = QPushButton("打印")
