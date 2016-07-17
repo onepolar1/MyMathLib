@@ -20,8 +20,13 @@ class myqwebview(QWebView):
                 MathJax.Hub.Config({
                     tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
                 });
+                MathJax.Hub.Config({
+                  SVG: {
+                    scale: 180
+                  }
+                });
             </script>
-            <script type="text/javascript" async src="MathJax2.6/MathJax.js?config=TeX-MML-AM_HTMLorMML"></script>
+            <script type="text/javascript" async src="MathJax2.6/MathJax.js?config=TeX-AMS-MML_SVG"></script>
             <style>
                 p { color: #00008B; font-weight: 900; font-family: verdana; line-height:100%}
                 strong {color: #222233}

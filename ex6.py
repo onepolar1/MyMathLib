@@ -22,8 +22,13 @@ class htmlViewer(QWebView):
                 MathJax.Hub.Config({
                     tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
                 });
+                MathJax.Hub.Config({
+                  SVG: {
+                    scale: 180
+                  }
+                });
             </script>
-            <script type="text/javascript" src="MathJax2.6/MathJax.js?config=TeX-MML-AM_HTMLorMML"></script>
+            <script type="text/javascript" src="MathJax2.6/MathJax.js?config=TeX-AMS-MML_SVG"></script>
             <style>
                 p { color: #00008B; font-weight: 900; font-family: verdana; line-height:100%}
                 strong {color: #222233}
@@ -84,9 +89,7 @@ class htmlViewer(QWebView):
         self.printer.setFullPage(True)
         #self.printer.setResolution(72)
         filename = desktop + r"printYou.pdf"
-        print(filename)
-        self.printer.setOutputFileName("printYou.pdf")
-
+        
     def genPdf(self):
         self.printer.setOutputFileName("printYou.pdf")
         # self.loadFinished.connect(self.execpreview)
