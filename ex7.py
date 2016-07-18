@@ -1,133 +1,104 @@
-#!/usr/bin/env python
-
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.QtWebKit import *
-import os
-import platform
 
-userhome = os.path.expanduser('~')
-desktop = userhome + os.path.sep +  'Desktop' + os.path.sep
-
-class htmlViewer(QWebView):
-    def __init__(self,url, parent=None):
-        QWebView.__init__(self,parent)
-
+class BrowserScreen(QWebView):
+    def __init__(self):
+        QWebView.__init__(self)
         self.baseUrl = QUrl.fromLocalFile(QDir.current().absoluteFilePath("dummy.html"));
 
-        self.htmlStr1 = """
+        self.resize(800, 600)
+        self.show()
+        self.htmlheadstr = """
             <!DOCTYPE html>
-                <html>
-                <head>
-                <title>MathJax TeX to MathML Page</title>
-                <script>
-                function toMathML(jax,callback) {
-                  var mml;
-                  try {
-                    mml = jax.root.toMathML("");
-                  } catch(err) {
-                    if (!err.restart) {throw err} // an actual error
-                    return MathJax.Callback.After([toMathML,jax,callback],err.restart);
+            <html>
+            <head>
+            <title>MathJax TeX to MathML Page</title>
+            <meta charset="UTF-8">            
+            <script type="text/x-mathjax-config">
+              MathJax.Hub.Config({
+                tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}
+              }); 
+              MathJax.Hub.Config({
+                  SVG: {
+                    scale: 180
                   }
-                  MathJax.Callback(callback)(mml);
-                }
-                </script>
-                <script type="text/x-mathjax-config">
-                  MathJax.Hub.Config({
-                    tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}
-                  });
-                  MathJax.Hub.Queue(
-                    function () {
-                      var jax = MathJax.Hub.getAllJax();
-                      for (var i = 0; i < jax.length; i++) {
-                        toMathML(jax[i],function (mml) {
-                          alert(jax[i].originalText + "\n\n=>\n\n"+ mml);
-                        });
-                      }
-                    }
-                  );
-                </script>
-                <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML-full
-                "></script>
-                </head>
-            <body>
-            """
-        self.htmlStr2 = """
-            </body>
-            </html>
-            """
+                }); 
+            </script>
 
-        tmpstr =  """
-            <p>
-            当 $a \ne 0$ 时, 有两个解决方法 \(ax^2 + bx + c = 0\) and  
+            <script type="text/javascript" src="MathJax2.6/MathJax.js?config=TeX-AMS-MML_SVG"></script>
+            </head>
+            <body>
+        """
+        self.htmlendstr = """</body>
+                            </html>"""
+
+        self.setHtml(self.htmlheadstr + """
+           <script>function message() { return "Clicked!"; }</script>
+           <h1>QtWebKit + Python sample program</h1>
+           <input type="button" value="TheFirstClickPy!"
+                  onClick="alert('[javascript] ' + message())"/>
+           <input type="button" value="Click Python!"
+                  onClick="python.alert('[python] ' +
+                                        python.message())"/>
+           <br />
+           
+           <script>
+              function messageCESHI() {  
+                alert("haha")
+                var jax = MathJax.Hub.getAllJax();  
+                alert(jax.length)
+                //var arr = new Array()
+                for (var i = 0; i < jax.length; i++) {
+                    alert(jax[i]);
+                    alert(jax[i].root.toMathML(""))                    
+                }
+                //alert(arr)
+                /**/
+                return "Clicked!"; 
+
+              }
+            </script>      
+            
+            <input type="button" value="TheSecond!!!"
+                              onClick="alert('[!!!!] ' + messageCESHI())"/>
+
+            <p>当 $a < 0$ 时, 有两个解决方法 $ax^2 + bx + c = 0$ and  
             they are
             $$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$
             </p>
-            
-            <p>hello <strong>world</strong></p>
-            <p>$x+y=z \pi$</p>
-            <p>$a \div b = z^2$</p>
-            <p>$\\frac{2}{3}=5$</p>
-            <p>$$\\frac{2}{3}=5$$</p>
-            <p>欧拉公式：Euler's identity, <mathjax>$e^{i\pi} = -1$</mathjax>, is widely considered the most beautiful theorem in
-            mathematics.</p>
-            <img src="images/trash.png" alt="Smiley face" width="100" height="100" align="right">
-            """
 
-        self.setHtml(self.htmlStr1 + tmpstr + self.htmlStr2, self.baseUrl)
-        # self.setHtml(svgExStr)
+        """ + self.htmlendstr, self.baseUrl)
+
         self.setZoomFactor(1)
+        self.createTrayIcon()
+        self.trayIcon.show()
 
-        
-    def genPdf(self):
-        self.printer.setOutputFileName("printYou.pdf")
-        # self.loadFinished.connect(self.execpreview)
+    def createTrayIcon(self):
+        self.trayIcon = QSystemTrayIcon(self)
+        self.trayIcon.setIcon(QIcon("images/trash.png"))
 
-    # def genUrl(self):
-    #     pageSource = """<html><head>
+    def showMessage(self, msg):
+        self.trayIcon.showMessage("This is Python", msg,
+            QSystemTrayIcon.MessageIcon(0), 15 * 1000)
 
-    #     <script type="text/javascript" async src="MathJax2.6/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-    #     </head><body>
-    #     <p><mathjax>$$
-    #     \imath x+y=z
-    #     \pi \\\\
-    #     \\frac{1}{3}
-    #     $$</mathjax></p>
-    #     </body></html>"""
+class PythonJS(QObject):
+    __pyqtSignals__ = ("contentChanged(const QString &)")
+    @pyqtSignature("QString")
+    def alert(self, msg):
+        self.emit(SIGNAL('contentChanged(const QString &)'), msg)
 
-    #     tempFile = QFile('mathjax_ex.html')
-    #     tempFile.open(QFile.WriteOnly)
-    #     stream = QTextStream(tempFile)
-    #     stream << pageSource
-    #     tempFile.close()
-    #     fileUrl = QUrl.fromLocalFile(QFileInfo(tempFile).canonicalFilePath())
-    #     return fileUrl
-    
+    @pyqtSignature("", result="QString")
+    def message(self):
+        return "Click!"
 
-class QuestionDlg(QDialog):
-    def __init__(self, parent=None, db="", curuser=""):
-        super(QuestionDlg,self).__init__(parent)
-
-        self.resize(800, 600)
-
-        titleLayout = QHBoxLayout()
-        self.questionDisp = htmlViewer("")
-        btn = QPushButton("打印")
-        titleLayout.addWidget(self.questionDisp)
-        titleLayout.addWidget(btn)
-        btn.clicked.connect(self.printview)
-
-        self.setLayout(titleLayout)
-
-    def printview(self):
-        # self.questionDisp.genPdf()
-        print("hello")
-
-
-
-if __name__ == "__main__":
+if __name__=='__main__':
     import sys
-    app=QApplication(sys.argv)
-    dialog=QuestionDlg()
-    dialog.show()
-    app.exec_()
+    app = QApplication(sys.argv)
+    browser = BrowserScreen()
+    pjs = PythonJS()
+    browser.page().mainFrame().addToJavaScriptWindowObject("python", pjs)
+    QObject.connect(pjs, SIGNAL("contentChanged(const QString &)"),
+                    browser.showMessage)
+
+    sys.exit(app.exec_())
