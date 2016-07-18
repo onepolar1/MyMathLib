@@ -82,13 +82,13 @@ class htmlViewer(QWebView):
 
 
         # self.setUrl(QUrl(url))
-        self.printer = QPrinter(QPrinterInfo.defaultPrinter(),QPrinter.HighResolution)
-        self.printer.setOutputFormat(QPrinter.PdfFormat)
-        self.printer.setOrientation(QPrinter.Portrait)
-        self.printer.setPaperSize(QPrinter.A4)
-        self.printer.setFullPage(True)
-        #self.printer.setResolution(72)
-        filename = desktop + r"printYou.pdf"
+        # self.printer = QPrinter(QPrinterInfo.defaultPrinter(),QPrinter.HighResolution)
+        # self.printer.setOutputFormat(QPrinter.PdfFormat)
+        # self.printer.setOrientation(QPrinter.Portrait)
+        # self.printer.setPaperSize(QPrinter.A4)
+        # self.printer.setFullPage(True)
+        # #self.printer.setResolution(72)
+        # filename = desktop + r"printYou.pdf"
         
     def genPdf(self):
         self.printer.setOutputFileName("printYou.pdf")
@@ -134,7 +134,7 @@ class QuestionDlg(QDialog):
         self.setLayout(titleLayout)
 
     def printview(self):
-        self.questionDisp.genPdf()
+        # self.questionDisp.genPdf()
         print("hello")
 
 
