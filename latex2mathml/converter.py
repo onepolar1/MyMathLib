@@ -126,7 +126,8 @@ def _convert_command(element, elements, index, iterable, parent):
     if element in MATRICES and (element.endswith('*') or element == r'\array'):
         index += 1
         alignment = elements[index]
-        iterable.next()
+        next(iterable)
+        # iterable.next()
     for j in range(params):
         index += 1
         param = elements[index]
@@ -148,7 +149,8 @@ def _convert_command(element, elements, index, iterable, parent):
         new_parent.append_child(Element('mo', '&#x000AF;', stretchy='true'))
     elif element == r'\underline':
         new_parent.append_child(Element('mo', '&#x00332;', stretchy='true'))
-    [iterable.next() for _ in xrange(params)]
+    [next(iterable) for _ in xrange(params)]
+    # [iterable.next() for _ in xrange(params)]
 
 
 def _convert_and_append_operator(symbol, parent):
