@@ -4,7 +4,7 @@ from PyQt4.QtSql import *
 from PyQt4.QtWebKit import *
 from myQwebview import myqwebview
 import markdown, os, shutil, xlrd
-from time import gmtime, strftime
+from time import gmtime, strftime, pyperclip
 try: import mdx_mathjax
 except: pass
 

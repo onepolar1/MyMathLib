@@ -447,7 +447,7 @@ def GenStatWord(title, picpath, listData):
     w.Selection.ParagraphFormat.Alignment =  0
     w.Selection.EndKey(6)
 
-    import pyperclip
+    
     mathstr = """<math xmlns="http://www.w3.org/1998/Math/MathML">
     <mrow>
         <msup>
