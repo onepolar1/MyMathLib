@@ -1,4 +1,4 @@
-import re
+import re, os
 import latex2mathml
 from bs4 import BeautifulSoup
 
@@ -17,9 +17,17 @@ def genImg(strques = ""):
 	lastLstQues = []
 	resuLstQues = []
 	indx = 0
+	tmpdict = {}
+	curdir = os.getcwd() + os.path.sep
 	for istr in strqueslst[:-1]:
 		lastLstQues.append(istr)
-		lastLstQues.append(str(imglst[indx]['src']))
+		tmpdict['filename'] = curdir + imglst[indx]['src']
+		tmpdict['height'] = imglst[indx]['height']
+		tmpdict['width'] = imglst[indx]['width']
+		tmpdict['width'] = imglst[indx]['width']
+		tmpdict['align'] = imglst[indx]['align']
+		lastLstQues.append(tmpdict)
+		tmpdict = {}
 		indx += 1
 
 	lastLstQues.append(strqueslst[-1])
@@ -27,13 +35,12 @@ def genImg(strques = ""):
 		if ivalue != "":
 			resuLstQues.append(ivalue)
 
-	print(strques)
+	# print(strques)
 	return resuLstQues
 
 
-
 def getMathml(strques = ""):
-	
+
 	strques = strques.replace("\$", "!!")
 	if strques.count("$") == 0 or strques.count("$") % 2 == 1:
 		strques = strques.replace("!!", "$")
@@ -41,7 +48,7 @@ def getMathml(strques = ""):
 
 	strsplit = re.split("\$", strques)
 	laststr = []
-	
+
 	for i in range(len(strsplit)):
 		if strsplit[i] == "":
 			continue;
@@ -61,10 +68,19 @@ def getMathml(strques = ""):
 		laststr[i] = laststr[i].replace("!!", "$")
 	return laststr
 
-if __name__ == '__main__':
+def generateWordList():
 	s = """这是计算题$3232+3232=$（    ）<img align="right" alt="Smiley face" height="100" src="images/login.png" width="100"/><img align="right" alt="Smiley face" height="100" src="images/trash.png" width="100"/>"""
-	# s = 'ccc\$'
-	print(genImg(s))
-	# print(getMathml(s))
+	quesImgList = genImg(s)
+	allList = []
+	for istr in quesImgList:
+		if type(istr) != type({}):
+			allList.extend(getMathml(istr))
+		else:
+			allList.append(istr)
+	return allList
 
-			 
+if __name__ == '__main__':
+	print(generateWordList())
+	# s = 'ccc\$'
+	# print(genImg(s))
+	# print(getMathml(s))
