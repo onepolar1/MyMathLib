@@ -36,6 +36,15 @@ class BrowserScreen(QWebView):
             <p>$$\\frac{2}{3}=5$$</p>
             <p>欧拉公式：Euler's identity, <mathjax>$e^{i\pi} = -1$</mathjax>, is widely considered the most beautiful theorem in
             mathematics.</p>
+
+            <math xmlns="http://www.w3.org/1998/Math/MathML">
+    <mrow>
+        <msup>
+            <mi>a</mi>
+            <mi>b</mi>
+        </msup>
+    </mrow>
+</math>
             </body>
         """, baseUrl)
 
