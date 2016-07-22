@@ -3,6 +3,46 @@
 
 from resources import *
 
+class DragImgTextEditEX(QTextEdit):
+    def __init__(self, type, parent=None):
+        super(DragImgTextEditEX, self).__init__(parent)
+        self.setAcceptDrops(True)
+        # self.setIconSize(QtCore.QSize(72, 72))
+
+    def mousePressEvent(self, event):
+        # print('a')
+        if event.button() == Qt.RightButton:
+            QTextEdit.mousePressEvent(self,event)
+            return
+        # print(event.sender(), event.button())
+        self.offset = event.pos()
+        print(self.offset)
+
+
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasUrls:
+            event.accept()
+        else:
+            event.ignore()
+
+    def dragMoveEvent(self, event):
+        if event.mimeData().hasUrls:
+            event.setDropAction(Qt.CopyAction)
+            event.accept()
+        else:
+            event.ignore()
+
+    def dropEvent(self, event):
+        if event.mimeData().hasUrls:
+            event.setDropAction(Qt.CopyAction)
+            event.accept()
+            links = []
+            for url in event.mimeData().urls():
+                links.append(str(url.toLocalFile()))
+            self.emit(SIGNAL("dropped"), links)
+        else:
+            event.ignore()
+
 class MyWindow(QWidget):
     def __init__(self, parent=None):
         super(MyWindow, self).__init__(parent)
@@ -14,7 +54,7 @@ class MyWindow(QWidget):
         self.pushButtonImage.clicked.connect(self.on_pushButtonImage_clicked)
         self.btn2.clicked.connect(self.resizeImage)
 
-        self.textEditImage = QTextEdit(self)
+        self.textEditImage = DragImgTextEditEX(self)
         self.textEditImage.setPlainText("Insert an image here:")
 
         self.layoutVertical = QVBoxLayout(self)
@@ -22,8 +62,8 @@ class MyWindow(QWidget):
         self.layoutVertical.addWidget(self.btn2)
         self.layoutVertical.addWidget(self.textEditImage)
 
-        self.resizeImage()
-
+        # self.resizeImage()
+    
     def resizeImage(self):
         currentBlock = self.textEditImage.textCursor().block()
         it = QTextBlock.iterator()
@@ -34,8 +74,10 @@ class MyWindow(QWidget):
             # print(it)
             
             if currentFragment.isValid():
+                # print(currentFragment.charFormat())
                 if currentFragment.charFormat().isImageFormat ():
                     newImageFormat = currentFragment.charFormat().toImageFormat()
+                    print(newImageFormat.name())
                     size = [newImageFormat.width(), newImageFormat.height()]
                     # print(size)
 
