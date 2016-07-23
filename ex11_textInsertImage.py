@@ -4,6 +4,8 @@
 from resources import *
 
 class DragImgTextEditEX(QTextEdit):
+    mousePressedSignal = pyqtSignal(QPoint)
+
     def __init__(self, type, parent=None):
         super(DragImgTextEditEX, self).__init__(parent)
         self.setAcceptDrops(True)
@@ -15,8 +17,9 @@ class DragImgTextEditEX(QTextEdit):
             QTextEdit.mousePressEvent(self,event)
             return
         # print(event.sender(), event.button())
-        self.offset = event.pos()
-        print(self.offset)
+        # self.offset = event.pos()
+        self.mousePressedSignal.emit(event.pos())
+        # print(self.offset)
 
 
     def dragEnterEvent(self, event):
@@ -55,6 +58,8 @@ class MyWindow(QWidget):
         self.btn2.clicked.connect(self.resizeImage)
 
         self.textEditImage = DragImgTextEditEX(self)
+        self.textEditImage.mousePressedSignal.connect(self.OnMousePressed)
+
         self.textEditImage.setPlainText("Insert an image here:")
 
         self.layoutVertical = QVBoxLayout(self)
@@ -63,16 +68,41 @@ class MyWindow(QWidget):
         self.layoutVertical.addWidget(self.textEditImage)
 
         # self.resizeImage()
-    
+
+    def OnMousePressed(self, pos):
+        cursor = self.textEditImage.cursorForPosition(pos)
+        print(pos)
+        print(cursor)
+        position = cursor.position()
+        print(position, '========================')
+        cursor.setPosition(position)
+        self.textEditImage.setTextCursor(cursor)
+        self.getEditImage()
+
+    def getEditImage(self):
+        currentBlock = self.textEditImage.textCursor().block()
+        it = QTextBlock.iterator()
+        it = currentBlock.begin()
+        while it != currentBlock.end():
+            currentFragment = it.fragment()
+            it += 1
+            if currentFragment.isValid():
+                # print(currentFragment.position(), "11111qtextfragment")
+                if currentFragment.charFormat().isImageFormat ():
+                    # print(it)
+                    newImageFormat = currentFragment.charFormat().toImageFormat()
+                    # print(newImageFormat, '-------')
+                    print(currentFragment.position(), "qtextfragment")
+
     def resizeImage(self):
         currentBlock = self.textEditImage.textCursor().block()
         it = QTextBlock.iterator()
         it = currentBlock.begin()
-        while it != currentBlock.end():            
+        while it != currentBlock.end():
             currentFragment = it.fragment()
             it += 1
             # print(it)
-            
+
             if currentFragment.isValid():
                 # print(currentFragment.charFormat())
                 if currentFragment.charFormat().isImageFormat ():
@@ -92,9 +122,9 @@ class MyWindow(QWidget):
                         helper.setPosition(currentFragment.position());
                         helper.setPosition(currentFragment.position() + currentFragment.length(), QTextCursor.KeepAnchor);
                         helper.setCharFormat(newImageFormat)
-                      
-                     
-             
+
+
+
         # print(self.textEditImage.textCursor().block())
 
 
