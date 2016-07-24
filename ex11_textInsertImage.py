@@ -71,10 +71,19 @@ class MyWindow(QWidget):
 
     def OnMousePressed(self, pos):
         cursor = self.textEditImage.cursorForPosition(pos)
-        print(pos)
-        print(cursor)
+        rect1 = self.textEditImage.cursorRect(cursor)
+        pos1 = QPoint(rect1.top(), rect1.left())
+        # print(rect1.bottomRight)
+        print(rect1, pos)
+        print(self.textEditImage.viewport(), "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+        print(self.textEditImage.mapToGlobal(pos1), "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+        # print(self.textEditImage.mapFromGlobal(pos), "=====================")
+        # print(self.textEditImage.cursorRect(cursor), "~~~~~")
+        # print(pos, "~~~~~")
+        # print(cursor)
         position = cursor.position()
-        print(position, '========================')
+        print(position, '========================', cursor.charFormat().isImageFormat(), "\n\n")
+        # print(self.textEditImage.)
         cursor.setPosition(position)
         self.textEditImage.setTextCursor(cursor)
         self.getEditImage()
@@ -91,8 +100,11 @@ class MyWindow(QWidget):
                 if currentFragment.charFormat().isImageFormat ():
                     # print(it)
                     newImageFormat = currentFragment.charFormat().toImageFormat()
+                    # print(newImageFormat)
+                    helper = self.textEditImage.textCursor()
+                    # print(helper.selection())
                     # print(newImageFormat, '-------')
-                    print(currentFragment.position(), "qtextfragment")
+                    # print(currentFragment.position(), "qtextfragment")
 
     def resizeImage(self):
         currentBlock = self.textEditImage.textCursor().block()
@@ -100,6 +112,7 @@ class MyWindow(QWidget):
         it = currentBlock.begin()
         while it != currentBlock.end():
             currentFragment = it.fragment()
+            # print(currentFragment.position())
             it += 1
             # print(it)
 
@@ -107,18 +120,14 @@ class MyWindow(QWidget):
                 # print(currentFragment.charFormat())
                 if currentFragment.charFormat().isImageFormat ():
                     newImageFormat = currentFragment.charFormat().toImageFormat()
-                    print(newImageFormat.name())
+                    # print(newImageFormat.name())
                     size = [newImageFormat.width(), newImageFormat.height()]
                     # print(size)
-
                     newImageFormat.setWidth(size[0]*0.8)
                     newImageFormat.setHeight(size[1]*0.8)
 
                     if  newImageFormat.isValid():
-                        #QMessageBox::about(this, "Fragment", currentFragment.text());
-                        #newImageFormat.setName(":/icons/text_bold.png");
                         helper = self.textEditImage.textCursor()
-
                         helper.setPosition(currentFragment.position());
                         helper.setPosition(currentFragment.position() + currentFragment.length(), QTextCursor.KeepAnchor);
                         helper.setCharFormat(newImageFormat)
@@ -163,15 +172,15 @@ class MyWindow(QWidget):
         imageFormat.setName(imageUri.toString())
 
         textCursor = self.textEditImage.textCursor()
-        textCursor.movePosition(
-            QTextCursor.End,
-            QTextCursor.MoveAnchor
-        )
+        # textCursor.movePosition(
+        #     QTextCursor.End,
+        #     QTextCursor.MoveAnchor
+        # )
         textCursor.insertImage(imageFormat)
 
         # This will hide the cursor
-        blankCursor = QCursor(Qt.BlankCursor)
-        self.textEditImage.setCursor(blankCursor)
+        # blankCursor = QCursor(Qt.BlankCursor)
+        # self.textEditImage.setCursor(blankCursor)
 
 if __name__ == "__main__":
     import sys
