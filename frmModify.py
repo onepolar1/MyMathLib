@@ -196,7 +196,7 @@ class QuesModifyDlg(QDialog):
             newImgName = strftime("%Y-%m-%d-%H-%M-%S", gmtime()) + file_extensions
             newImgAllPath = newImgPath + QDir.separator() + newImgName
             shutil.copyfile(fileName, newImgAllPath) ##复制文件
-            return '''<img align="right" alt="Smiley face" height="100" src="images/''' + newImgName + '''" width="100"/>'''
+            return '''<img alt="Smiley face" src="images/''' + newImgName + '''" width="100" height="100" align="right" />'''
         else:
             return ""
            
@@ -247,7 +247,8 @@ class QuesModifyDlg(QDialog):
                 shutil.copyfile(filename, newImgAllPath) ##复制文件
 
                 tmpstr = self.questionEditor.toPlainText()
-                tmpstr += '''<img align="right" alt="Smiley face" height="100" src="images/''' + newImgName + '''" width="100"/>'''
+                tmpstr += '''<img alt="Smiley face" src="images/''' + newImgName + '''" width="100" height="100" align="right" />'''
+                # tmpstr += '''<img align="right" alt="Smiley face" height="100" src="images/''' + newImgName + '''" width="100"/>'''
                 self.questionEditor.setPlainText(tmpstr)
 
     def pictureDropped2(self, l):
@@ -259,7 +260,8 @@ class QuesModifyDlg(QDialog):
                 shutil.copyfile(filename, newImgAllPath) ##复制文件
 
                 tmpstr = self.answerEditor.toPlainText()
-                tmpstr += '''<img align="right" alt="Smiley face" height="100" src="images/''' + newImgName + '''" width="100"/>'''
+                tmpstr += '''<img alt="Smiley face" src="images/''' + newImgName + '''" width="100" height="100" align="right" />'''
+                # tmpstr += '''<img align="right" alt="Smiley face" height="100" src="images/''' + newImgName + '''" width="100"/>'''
                 self.answerEditor.setPlainText(tmpstr)
 
     def createQuestionEditor(self):

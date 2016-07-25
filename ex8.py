@@ -95,7 +95,7 @@ def getMathml(strques = ""):
     return laststr
 
 def generateWordList():
-    s = """这是计算题$3232+3232=$（    ）\r\n<img align="right" alt="Smiley face" height="100" src="images/login.png" width="100"/><img align="right" alt="Smiley face" height="100" src="images/trash.png" width="100"/>\n再试试"""
+    s = """这是计算题$3232+3232=$（    ）\r\n<img alt="Smiley face" src="images/login.png" height="100"  width="100" align="right" /><img align="right" alt="Smiley face" height="100" src="images/trash.png" width="100"/>\n再试试"""
     quesImgList = genImg2(s)
     # quesImgList = genImg(s)
     allList = []
