@@ -63,8 +63,10 @@ class MainWindow(QMainWindow):
         # print(2)
 
     def closeMyTab(self, tabindx):
+        if self.tabWidget.tabText(tabindx) == "新增/修改题目":
+            widget = self.tabWidget.widget(tabindx)
+            widget.removeNotUseImgs()
         self.tabWidget.removeTab (tabindx)
-        # print(tabindx)
 
     def modifyPwd(self):
         QMessageBox.warning(self, "提示", "待添加")

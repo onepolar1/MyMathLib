@@ -2,6 +2,9 @@
 from resources import *
 
 class QuesModifyDlg(QDialog):
+    ## 自定义信号
+    # jumpNoSaveSignal = pyqtSignal(str)
+
     def __init__(self, parent=None,  db="", curuser="", questionstr="", answerstr=""):
         super(QuesModifyDlg, self).__init__()
 
@@ -154,6 +157,9 @@ class QuesModifyDlg(QDialog):
         quesWhichyear   = self.quesWhichyearCombox.currentText()
         question        = self.questionEditor.toPlainText()
         answer          = self.answerEditor.toPlainText()
+
+        self.removeNotUseImgs("save")
+
         # print(quesCategory, quesType, quesWhichyear, question, answer)
         if question.strip() == "":
             QMessageBox.information(self, "提示", "当前题目为空，无法保存!")
@@ -186,21 +192,27 @@ class QuesModifyDlg(QDialog):
             query.bindValue(":demo", '')
             query.exec_()
 
-            curImageList =  self.getEditorImageNames()
-            for itemName in curImageList:
-                if itemName in self.curImgsNamesList:
-                    self.curImgsNamesList.remove(itemName)
-
-            ## 删除所有当前不存于题库的图片
-            for itemName in self.curImageList:
-                os.remove("images" + os.path.sep + itemName)
-
+            
             QMessageBox.information(self, "提示", "新题目添加成功!")
 
             ############################################################
             ### 需要解析题目和答案两个QTextEdit中的图片，将这些文件名字从 
             ### self.curImgsNameList中删除，最后再将该列表中剩余的图片从 images文件夹中删除
             ############################################################
+    def removeNotUseImgs(self, flag="no_save"):
+        if len(self.curImgsNamesList) == 0:
+            return
+
+        if flag == "save":
+            curImageList =  self.getEditorImageNames()        
+            for itemName in curImageList:
+                if itemName in self.curImgsNamesList:
+                    self.curImgsNamesList.remove(itemName)
+
+        ## 删除所有当前不存于题库的图片
+        for itemName in self.curImgsNamesList:
+            os.remove(os.path.join(os.getcwd(), "images", itemName))
+        self.curImgsNamesList = []
 
 
     def getEditorImageNames(self):
