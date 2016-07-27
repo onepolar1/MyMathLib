@@ -3,7 +3,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtSql import *
 from PyQt4.QtWebKit import *
 from myQwebview import myqwebview
-import markdown, os, shutil, xlrd, pyperclip, re, time, lxml
+import markdown, os, shutil, xlrd, pyperclip, re, time, lxml, glob, filecmp
 from time import gmtime, strftime
 import latex2mathml
 from bs4 import BeautifulSoup

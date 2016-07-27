@@ -10,7 +10,8 @@ class QuesModifyDlg(QDialog):
         else:
             self.db = db
 
-        self.curdir = QDir.currentPath()
+        # self.curdir = QDir.currentPath()
+        self.curdir = os.getcwd()
         self.old_questionstr = questionstr
         self.curRowid = -1
 
@@ -184,7 +185,55 @@ class QuesModifyDlg(QDialog):
             query.bindValue(":whichyear", quesWhichyear)
             query.bindValue(":demo", '')
             query.exec_()
+
+            curImageList =  self.getEditorImageNames()
+            for itemName in curImageList:
+                if itemName in self.curImgsNamesList:
+                    self.curImgsNamesList.remove(itemName)
+
+            ## 删除所有当前不存于题库的图片
+            for itemName in self.curImageList:
+                os.remove("images" + os.path.sep + itemName)
+
             QMessageBox.information(self, "提示", "新题目添加成功!")
+
+            ############################################################
+            ### 需要解析题目和答案两个QTextEdit中的图片，将这些文件名字从 
+            ### self.curImgsNameList中删除，最后再将该列表中剩余的图片从 images文件夹中删除
+            ############################################################
+
+
+    def getEditorImageNames(self):
+        '''得到当前两个QTextEdit中的图片名字'''
+        imageNamesLst = []
+
+        quesstr = self.questionEditor.toPlainText()
+        answstr = self.answerEditor.toPlainText()
+
+        for istr in [quesstr, answstr]:
+            imglst = BeautifulSoup(istr, "lxml").findAll('img') 
+            if len(imglst) == 0:
+                continue;
+
+            for item in imglst:
+                tmpname = os.path.split(item['src'])[-1]
+                if tmpname not in imageNamesLst:
+                    imageNamesLst.append(tmpname)
+
+        return imageNamesLst
+
+
+    def checkImgIsInImages(self, imgname, file_extensions):
+        imglist = glob.glob("images/*" + file_extensions)
+        flag = False
+        findfileName = ""
+        for imgItem in imglist:
+            if filecmp.cmp(imgname, imgItem):
+                flag = True
+                findfileName = imgItem
+                break
+            # print(filecmp.cmp(imgname, imgItem))
+        return [flag, findfileName]
 
     def InserImagesDialog(self):
         filedialog = QFileDialog()
@@ -195,7 +244,13 @@ class QuesModifyDlg(QDialog):
             filename1, file_extensions = os.path.splitext(fileName)
             newImgName = strftime("%Y-%m-%d-%H-%M-%S", gmtime()) + file_extensions
             newImgAllPath = newImgPath + QDir.separator() + newImgName
-            shutil.copyfile(fileName, newImgAllPath) ##复制文件
+
+            [flag, findfileName] = self.checkImgIsInImages(fileName, file_extensions)
+            if flag:            #文件已复制，不用再复制
+                newImgName = os.path.split(findfileName)[-1]                
+            else:
+                shutil.copyfile(fileName, newImgAllPath) ##复制文件
+                self.curImgsNamesList.append(newImgName) #对复制的文件，保存其文件名，要注意的是题目和答案的新增图片均在这个列表中
             return '''<img alt="Smiley face" src="images/''' + newImgName + '''" width="100" height="100" align="right" />'''
         else:
             return ""
@@ -206,6 +261,7 @@ class QuesModifyDlg(QDialog):
             tmpstr = self.questionEditor.toPlainText() + imghtml
             self.questionEditor.setPlainText(tmpstr)
 
+
     def insertImg2(self):
         imghtml = self.InserImagesDialog()
         if imghtml != "":       
@@ -213,6 +269,8 @@ class QuesModifyDlg(QDialog):
             self.answerEditor.setPlainText(tmpstr)
 
     def setQuestionAndAnswerstr(self, questionstr, answerstr):
+        self.curImgsNamesList = [] #记录当前题目本次修改未保存的图名
+
         self.questionEditor.setPlainText(questionstr)
         self.answerEditor.setPlainText(answerstr)
         query = QSqlQuery(self.db)
@@ -242,9 +300,19 @@ class QuesModifyDlg(QDialog):
         for filename in l:
             if os.path.exists(filename):
                 filename1, file_extensions = os.path.splitext(filename)
+                if file_extensions not in [".png", ".jpg", ".bmp", ".gif"]:
+                    return 
+                    # print(file_extensions)
+
                 newImgName = strftime("%Y-%m-%d-%H-%M-%S", gmtime()) + file_extensions
                 newImgAllPath = self.curdir + QDir.separator() + "images" + QDir.separator() + newImgName
-                shutil.copyfile(filename, newImgAllPath) ##复制文件
+
+                [flag, findfileName] = self.checkImgIsInImages(fileName, file_extensions)
+                if flag:            #文件已复制，不用再复制
+                    newImgName = os.path.split(findfileName)[-1]
+                else:
+                    shutil.copyfile(filename, newImgAllPath) ##复制文件
+                    self.curImgsNamesList.append(newImgName) #对复制的文件，保存其文件名，要注意的是题目和答案的新增图片均在这个列表中
 
                 tmpstr = self.questionEditor.toPlainText()
                 tmpstr += '''<img alt="Smiley face" src="images/''' + newImgName + '''" width="100" height="100" align="right" />'''
@@ -255,10 +323,18 @@ class QuesModifyDlg(QDialog):
         for filename in l:
             if os.path.exists(filename):
                 filename1, file_extensions = os.path.splitext(filename)
+                if file_extensions not in [".png", ".jpg", ".bmp", ".gif"]:
+                    return 
                 newImgName = strftime("%Y-%m-%d-%H-%M-%S", gmtime()) + file_extensions
                 newImgAllPath = self.curdir + QDir.separator() + "images" + QDir.separator() + newImgName
-                shutil.copyfile(filename, newImgAllPath) ##复制文件
 
+                [flag, findfileName] = self.checkImgIsInImages(fileName, file_extensions)
+                if flag:            #文件已复制，不用再复制
+                    newImgName = os.path.split(findfileName)[-1]
+                else:
+                    shutil.copyfile(filename, newImgAllPath) ##复制文件
+                    self.curImgsNamesList.append(newImgName) #对复制的文件，保存其文件名，要注意的是题目和答案的新增图片均在这个列表中
+                
                 tmpstr = self.answerEditor.toPlainText()
                 tmpstr += '''<img alt="Smiley face" src="images/''' + newImgName + '''" width="100" height="100" align="right" />'''
                 # tmpstr += '''<img align="right" alt="Smiley face" height="100" src="images/''' + newImgName + '''" width="100"/>'''
