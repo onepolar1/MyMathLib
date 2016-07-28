@@ -14,6 +14,8 @@ class QuesModifyDlg(QDialog):
             self.db = db
 
         # self.curdir = QDir.currentPath()
+        self.flag_IsChanged = 0
+
         self.curdir = os.getcwd()
         self.old_questionstr = questionstr
         self.curRowid = -1
@@ -42,10 +44,12 @@ class QuesModifyDlg(QDialog):
     def refreshQuestionDisp(self):
         questionstr = self.questionEditor.toPlainText()
         self.questionDisp.setHtmlString(mdProcessor.convert(questionstr))
+        self.flag_IsChanged = 1
 
     def refreshAnswerDisp(self):
         answerstr = self.answerEditor.toPlainText()
         self.answerDisp.setHtmlString(mdProcessor.convert(answerstr))
+        self.flag_IsChanged = 1
 
     def createQuestionDisp(self):
         self.quesDispGroupBox = QGroupBox("题目显示效果")
@@ -150,6 +154,7 @@ class QuesModifyDlg(QDialog):
     def clearQuesAndAnsStr(self):
         if QMessageBox.question(self, "清空确认", "是否要清空当前题目和答案？", "确定", "取消") == 0:
             self.setQuestionAndAnswerstr("", "")
+            self.removeNotUseImgs()
 
     def saveQuestion(self):
         quesCategory    = self.quesCategoryCombox.currentText()
@@ -213,6 +218,7 @@ class QuesModifyDlg(QDialog):
         for itemName in self.curImgsNamesList:
             os.remove(os.path.join(os.getcwd(), "images", itemName))
         self.curImgsNamesList = []
+        self.flag_IsChanged = 0
 
 
     def getEditorImageNames(self):

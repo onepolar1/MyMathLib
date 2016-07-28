@@ -63,9 +63,16 @@ class MainWindow(QMainWindow):
         # print(2)
 
     def closeMyTab(self, tabindx):
-        if self.tabWidget.tabText(tabindx) == "新增/修改题目":
+        if self.tabWidget.tabText(tabindx) == "新增/修改题目":            
             widget = self.tabWidget.widget(tabindx)
-            widget.removeNotUseImgs()
+
+            if widget.flag_IsChanged == 0: #不保存
+                widget.removeNotUseImgs()
+            else:
+                if QMessageBox.question(self, "确认", "是否要新增/修改已有题目？", "确定", "取消") == 0:
+                    widget.saveQuestion()
+                else:
+                    widget.removeNotUseImgs()
         self.tabWidget.removeTab (tabindx)
 
     def modifyPwd(self):
