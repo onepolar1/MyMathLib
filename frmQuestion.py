@@ -102,6 +102,10 @@ class QuestionDlg(QDialog):
     def viewDataCursorChanged(self, curindx, preindx):
         questionhtml = curindx.sibling(curindx.row(),0).data()
         answerhtml = curindx.sibling(curindx.row(),1).data()
+        if questionhtml is None:
+            questionhtml = ""
+        if answerhtml is None:
+            answerhtml = ""        
         self.questionDisp.setHtmlString(questionhtml)
         self.answerDisp.setHtmlString(answerhtml)
         
