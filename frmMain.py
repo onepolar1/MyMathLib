@@ -58,6 +58,10 @@ class MainWindow(QMainWindow):
     def closeEvent(self, event):
         # pass
         # print(1)
+        # print(self.tabWidget.count())
+        for tabindx in list(range(0, self.tabWidget.count())):
+            if self.tabWidget.tabText(tabindx) == "新增/修改题目":
+                self.closeMyTab(tabindx)
         self.db.close()
         # QSqlDatabase.removeDatabase(self.db.connectionName())
         # print(2)

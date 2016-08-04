@@ -313,6 +313,7 @@ class QuesModifyDlg(QDialog):
             self.quesWhichyearCombox.setCurrentIndex(pos3)
         # print(pos, "------")
         # print(self.curRowid, "setQuestionAndAnswerstr")
+        self.flag_IsChanged = 0
 
     def pictureDropped(self, l):
         for filename in l:
