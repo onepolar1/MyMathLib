@@ -65,6 +65,7 @@ class QuestionDlg(QDialog):
         savebtn         = QPushButton("保存")
         revertbtn       = QPushButton("撤销")
         removebtn       = QPushButton("删除")
+        exportBtn       = QPushButton("导出至Word文档...")
 
         btn_layout.addStretch(10)
         btn_layout.addWidget(newusrbtn)
@@ -72,12 +73,15 @@ class QuestionDlg(QDialog):
         btn_layout.addWidget(savebtn)
         btn_layout.addWidget(revertbtn)
         btn_layout.addWidget(removebtn)
+        btn_layout.addSpacing(10)
+        btn_layout.addWidget(exportBtn)
 
         newusrbtn.clicked.connect(self.newQuestion)
         modifybtn.clicked.connect(self.modifyQuestion)
         savebtn.clicked.connect(self.saveQuestion)
         revertbtn.clicked.connect(self.revertQuestion)
         removebtn.clicked.connect(self.removeQuestion)
+        exportBtn.clicked.connect(self.exportWord)
 
         self.QuestionView.doubleClicked.connect(self.dbclick)
         self.QuestionView.clicked.connect(self.viewclick)
@@ -98,6 +102,36 @@ class QuestionDlg(QDialog):
         # lst_layout.setStretch(3, 1)
 
         self.setLayout(lst_layout)
+
+    def exportWord(self):
+        # print(self.QuestionModel.record(0))
+        # print(self.QuestionModel.record(0).value(0))
+        # print(self.QuestionModel.record(1).value(2))
+        # print(self.QuestionModel.rowCount())
+
+        while self.QuestionModel.canFetchMore():
+            self.QuestionModel.fetchMore()
+
+        # print(self.QuestionModel.rowCount())
+
+        dictQuesInfo = {}
+        for indx in range(0, self.QuestionModel.rowCount()):
+            quesstr     = self.QuestionModel.record(indx).value(0)
+            answstr     = self.QuestionModel.record(indx).value(1)
+            classstr    = self.QuestionModel.record(indx).value(2)
+            typestr     = self.QuestionModel.record(indx).value(3)
+            yearstr     = self.QuestionModel.record(indx).value(4)
+            demostr     = self.QuestionModel.record(indx).value(5)
+            # tmplst = [quesstr, answstr, classstr, typestr, yearstr]
+            tmplst = [quesstr, answstr]
+
+            if typestr not in list(dictQuesInfo.keys()):
+                dictQuesInfo[typestr] = []
+            dictQuesInfo[typestr].append(tmplst)
+            print(tmplst)
+
+        for item in dictQuesInfo:
+            print(item, dictQuesInfo[item])
 
     def viewDataCursorChanged(self, curindx, preindx):
         questionhtml = curindx.sibling(curindx.row(),0).data()
